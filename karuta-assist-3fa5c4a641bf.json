@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "amq-bot",
+  "private_key_id": "3fa5c4a641bf7897ec5cb46bd405c28f953dd256",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDA2I28Xj8WNfFw\nTAKF7hwpFkDHv9BgaFqQ6pWSn3iHPAT/3l6z5F4NBe2QEnS+8GNJrs3Q8BqdRM0k\nhUpsiFeGm9O+fMALvS5MHhSonycxFQhteOMUCfQTiQq++A9alFTYOsKhwOKF+zeO\n/zq5HQHtQq6ksuaDrRcmi9uxXSZ0/rGTLwVXKA/pLnl2JQnPHhiCK85PptmrnKUO\n368YuZwcvg/PVaJ2KnEqYhCPQB0jkiZK5xR9qBjPvPopLkemU/3KaGGEHvYVNahH\nhEevJXOmY6QBQfV8TIf/D1RveCSFEX9iSh1YE7oT2xGEql5gvX98aNi5hhg+JR1e\nIbxAhSaHAgMBAAECggEACqYqtYMy0qQp7/ySixjJ/07WRvGFrT01+xipJ86clkMv\nN33tFtv+gZOZOcJ7JewaX4BCp04K+jJJbcHaiUHCK5HBUJyM8lkBDH0AwQsA3AoA\nTCNHztx52PZRXJhQKL1WLhaYltwS5jkoKUJY2M4MRDDRehDS/+R4Cc3hVNsC+6TY\nVrEIPCTFJdGSVyWaMUoadC4NW2m3N1ypkxl3ag+WD2o42hurUhtIQkriG7+AxF+e\nKeUeIoXbc2TV5PTx2Gtc7TNiXV3QrbtKp1oNblZC2yYdfsUUKr7vmo39w2AKo5oA\n8YRR7nd1jaQrIivckGXIOoPvIbjbE0AY26hynfey6QKBgQDkzq/pW1Q1FP/LHftg\n6+rcCZhyBVBiaHWaoH3ghAnK+eNOpyXaZCY4q0aStMY7HPQuI+krRiFAYHFGiDxi\ny2pVv1PTIsQyAIpICo4dKKSPTZxobvGrIBQfqDQD4g2rR8vTcxhbjr8KQHazajBr\nUymI6PtA7XCXrExn1rGX7GCnMwKBgQDXw8NORAzraRrvFuA1u+t0neOuPhhQR8JQ\njJWM+Db8/lV3NnBVtAi42Ewzmtbv+E0B4Lq1QAQNnJ5NkZsu9mo7tDE8V5R8Ggww\nTZsSPBvvfo3juS3GYD6/zqT3L0cai/U0R6sumKK1jGQZvyd85xJ4AUW4yQsMILmB\njdqDFoHzXQKBgFh+Q/UKGJhrJb9mOiozNGOj5mz69ysIYavLNMQX7T2uxiZOaUp8\n/3ddbu8gsaZ9PUd3JiBRgFzIsCbqXAiNyfOeCwqW4LDCGrlgM7S9Wl/+UWbmudtI\njd/siymRTV4YZ5HBawNGQ0bwxbgAcvefc2n7SenDq49N2UMz+v3aM0uXAoGBALH8\nbSos/LNdOrisGDx7TloevOjJlGj1KRglQGDPiRzd+UakA7rPDrrcws93FYNTQsMf\nzSUjL7TC09uNF4SABVZG6K6sWHKfUhquihNavnir3wRRh68zSdAT+QVnXLJLbfS4\ngj+n7eDxdMnAZCSmwRd5hThPr+tLO3vhtrWYZY6JAoGADu4oWiUh4e8KGQ5pTJW2\ngqAv6q484kFHlEEJmIJGLBA68zTQBxb7ufcXgvuDZ+XY15SRSxZKF0pKqmlffSzO\n+mT751bx2qpqd9j+Dhp8PpiomVlcL1AQwYR3Msg1A43M2z30vEp9YGechIqKr8bL\n80WlZU2qRlHs/IztWGAz7Bg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "eightyfourchain@amq-bot.iam.gserviceaccount.com",
+  "client_id": "101579871086240920346",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/eightyfourchain%40amq-bot.iam.gserviceaccount.com"
+}
