@@ -308,6 +308,7 @@ async def on_message(message):
     msg = message.content
     ch = message.channel
     guild = int(message.guild.id)
+    egg = bot.get_channel(826680875637800961)
     # CHANNEL LIMITING
     if guild in restrictedguilds:
         if int(ch.id) in allowedChannels(guild):
@@ -316,6 +317,7 @@ async def on_message(message):
             else:
                 if int(message.author.id) == 646937666251915264:
                     if message.reactions != []:
+                        await egg.send(f"https://discord.com/channels{message.guild.id}/{ch.id}/{message.id}")
                         time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
                                         str(i["Server"]) == str(message.guild.id)][0]))
                         for i in message.reactions:
@@ -330,6 +332,7 @@ async def on_message(message):
         else:
             if int(message.author.id) == 646937666251915264:
                 if message.reactions != []:
+                    await egg.send(f"https://discord.com/channels{message.guild.id}/{ch.id}/{message.id}")
                     time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
                                     str(i["Server"]) == str(message.guild.id)][0]))
                     for i in message.reactions:
