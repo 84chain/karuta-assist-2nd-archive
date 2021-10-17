@@ -311,31 +311,31 @@ async def on_message(message):
     # CHANNEL LIMITING
     if guild in restrictedguilds:
         if int(ch.id) in allowedChannels(guild):
-            if msg.attachments == []:
+            if message.attachments == []:
                 await bot.process_commands(message)
             else:
-                if int(msg.author.id) == 646937666251915264:
-                    if msg.reactions != []:
+                if int(message.author.id) == 646937666251915264:
+                    if message.reactions != []:
                         time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
-                                        str(i["Server"]) == str(msg.guild.id)][0]))
-                        for i in msg.reactions:
+                                        str(i["Server"]) == str(message.guild.id)][0]))
+                        for i in message.reactions:
                             if str(i.emoji) == "🍬":
                                 await ch.send(
-                                    f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(msg.guild.id)][0]}>")
+                                    f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(message.guild.id)][0]}>")
                 else:
                     await bot.process_commands(message)
     else:
-        if msg.attachments == []:
+        if message.attachments == []:
             await bot.process_commands(message)
         else:
-            if int(msg.author.id) == 646937666251915264:
-                if msg.reactions != []:
+            if int(message.author.id) == 646937666251915264:
+                if message.reactions != []:
                     time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
-                                    str(i["Server"]) == str(msg.guild.id)][0]))
-                    for i in msg.reactions:
+                                    str(i["Server"]) == str(message.guild.id)][0]))
+                    for i in message.reactions:
                         if str(i.emoji) == "🍬":
                             await ch.send(
-                                f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(msg.guild.id)][0]}>")
+                                f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(message.guild.id)][0]}>")
             else:
                 await bot.process_commands(message)
 
