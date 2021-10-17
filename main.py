@@ -167,6 +167,7 @@ async def visit(ctx):
                 await kvi.add_reaction("❓")
                 break
         except asyncio.TimeoutError:
+            await ctx.send("The `kvi` embed was not found")
             return
         except IndexError:
             pass
@@ -183,6 +184,7 @@ async def visit(ctx):
                 question = Question(kvi_d, url)
                 break
         except asyncio.TimeoutError:
+            await ctx.send(":question: was not given")
             return
     results = [i for i in datingsheet.get_all_records() if
                ((i["URL"][:-6] == url[:-6]) and i["Question"] == question.question)]
