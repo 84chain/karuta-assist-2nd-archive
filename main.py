@@ -319,7 +319,7 @@ async def on_message(message):
                         time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
                                         str(i["Server"]) == str(message.guild.id)][0]))
                         for i in message.reactions:
-                            if str(i.emoji) == "🍬":
+                            if str(i.emoji) == "🍬" or str(i.emoji) == "🍫":
                                 await ch.send(
                                     f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(message.guild.id)][0]}>")
                 else:
@@ -333,7 +333,7 @@ async def on_message(message):
                     time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
                                     str(i["Server"]) == str(message.guild.id)][0]))
                     for i in message.reactions:
-                        if str(i.emoji) == "🍬":
+                        if str(i.emoji) == "🍬" or str(i.emoji) == "🍫":
                             await ch.send(
                                 f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(message.guild.id)][0]}>")
             else:
