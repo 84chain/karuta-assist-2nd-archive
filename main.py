@@ -300,13 +300,15 @@ async def visit(ctx):
                     indexes.append(datingsheet.get_all_records().index(i))
             index = indexes[-1]
             break
-        except Exception as e:
-            ex = discord.Embed(title="An Exception has occurred...",
-                           description=f"Exception on https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
-            ex.add_field(name="Reason", value=e)
-            ex.set_thumbnail(url=botIcon)
-            await ctx.send(embed=ex)
-            return
+        except:
+            pass
+        # except Exception as e:
+        #     ex = discord.Embed(title="An Exception has occurred...",
+        #                    description=f"Exception on https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
+        #     ex.add_field(name="Reason", value=e)
+        #     ex.set_thumbnail(url=botIcon)
+        #     await ctx.send(embed=ex)
+        #     return
     await ctx.send(
         f"Data sent! Thank you! Your response number is {index + 2}. For error reporting please having this number ready.")
 
