@@ -167,7 +167,6 @@ async def visit(ctx):
                 await kvi.add_reaction("❓")
                 break
         except asyncio.TimeoutError:
-            await ctx.send("The `kvi` embed was not found")
             return
         except IndexError:
             pass
