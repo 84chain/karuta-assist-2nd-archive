@@ -184,7 +184,6 @@ async def visit(ctx):
                 question = Question(kvi_d, url)
                 break
         except asyncio.TimeoutError:
-            await ctx.send(":question: was not given")
             return
     results = [i for i in datingsheet.get_all_records() if
                ((i["URL"][:-6] == url[:-6]) and i["Question"] == question.question)]
