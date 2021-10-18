@@ -294,7 +294,7 @@ async def visit(ctx):
                 and str(i["Result"]) == str(questionresult)):
                 indexes.append(datingsheet.get_all_records().index(i))
         index = indexes[-1]
-        await ctx.send(f"Data sent! Thank you! Your response number is {index}. For error reporting please having this number ready.")
+        await ctx.send(f"Data sent! Thank you! Your response number is {index + 2}. For error reporting please having this number ready.")
     except Exception as e:
         ex = discord.Embed(title="An Exception has occurred...",
                            description=f"Exception on https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
