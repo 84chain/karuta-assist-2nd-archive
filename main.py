@@ -291,7 +291,7 @@ async def visit(ctx):
                 and str(i["URL"]) == str(question.url)
                 and str(i["Question"]) == str(question.question)
                 and str(i["Answer"]) == str(correctanswer)
-                and str(i["Results"]) == str(questionresult)):
+                and str(i["Result"]) == str(questionresult)):
                 indexes.append(datingsheet.get_all_records().index(i))
         index = indexes[-1]
         await ctx.send(f"Data sent! Thank you! Your response number is {index}. For error reporting please having this number ready.")
