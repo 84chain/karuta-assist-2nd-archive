@@ -276,7 +276,7 @@ async def visit(ctx):
                 correctanswer = question.answer2
             elif r[0].emoji == "1️⃣":
                 correctanswer = question.answer1
-            await ctx.send("Sending data to Google Sheets... please wait")
+            send = await ctx.send("Sending data to Google Sheets... please wait")
             break
         except asyncio.TimeoutError:
             await ctx.send("Timed out")
@@ -288,6 +288,9 @@ async def visit(ctx):
             break
         except:
             pass
+    await send.delete()
+    trymsg = await ctx.send("Due to Google API's rate limits, there may be some delay sending the data")
+    tries = 0
     while True:
         try:
             indexes = []
@@ -301,6 +304,8 @@ async def visit(ctx):
             index = indexes[-1]
             break
         except:
+            tries += 1
+            await trymsg.edit(content=f"Due to Google API's rate limits, there may be some delay sending the data\nTries so far: {tries}")
             pass
         # except Exception as e:
         #     ex = discord.Embed(title="An Exception has occurred...",
@@ -309,6 +314,7 @@ async def visit(ctx):
         #     ex.set_thumbnail(url=botIcon)
         #     await ctx.send(embed=ex)
         #     return
+    await trymsg.delete()
     await ctx.send(
         f"Data sent! Thank you! Your response number is {index + 2}. For error reporting please having this number ready.")
 
