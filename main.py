@@ -282,25 +282,34 @@ async def visit(ctx):
         except asyncio.TimeoutError:
             await ctx.send("Timed out")
             return
-    try:
-        datingsheet.append_row(
-            [question.visitor, question.url, question.question, correctanswer, questionresult])
-        indexes = []
-        for i in datingsheet.get_all_records():
-            if (str(i["Visitor"]) == str(question.visitor)
-                and str(i["URL"]) == str(question.url)
-                and str(i["Question"]) == str(question.question)
-                and str(i["Answer"]) == str(correctanswer)
-                and str(i["Result"]) == str(questionresult)):
-                indexes.append(datingsheet.get_all_records().index(i))
-        index = indexes[-1]
-        await ctx.send(f"Data sent! Thank you! Your response number is {index + 2}. For error reporting please having this number ready.")
-    except Exception as e:
-        ex = discord.Embed(title="An Exception has occurred...",
+    while True:
+        try:
+            datingsheet.append_row(
+                [question.visitor, question.url, question.question, correctanswer, questionresult])
+            break
+        except:
+            pass
+    while True:
+        try:
+            indexes = []
+            for i in datingsheet.get_all_records():
+                if (str(i["Visitor"]) == str(question.visitor)
+                        and str(i["URL"]) == str(question.url)
+                        and str(i["Question"]) == str(question.question)
+                        and str(i["Answer"]) == str(correctanswer)
+                        and str(i["Result"]) == str(questionresult)):
+                    indexes.append(datingsheet.get_all_records().index(i))
+            index = indexes[-1]
+            break
+        except Exception as e:
+            ex = discord.Embed(title="An Exception has occurred...",
                            description=f"Exception on https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
-        ex.add_field(name="Reason", value=e)
-        ex.set_thumbnail(url=botIcon)
-        await ctx.send(embed=ex)
+            ex.add_field(name="Reason", value=e)
+            ex.set_thumbnail(url=botIcon)
+            await ctx.send(embed=ex)
+            return
+    await ctx.send(
+        f"Data sent! Thank you! Your response number is {index + 2}. For error reporting please having this number ready.")
 
 
 @bot.command(aliases=["r2", "2r"])
