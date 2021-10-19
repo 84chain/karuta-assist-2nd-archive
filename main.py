@@ -350,8 +350,14 @@ async def dateleaderboard(ctx):
             loads += 1
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
     most_answers = mode([i["Visitor"] for i in load])
+    most_answers_num = len([i for i in load if i["Visitor"] == most_answers])
+
     most_correct = mode([i["Visitor"] for i in load if i["Result"] == 1])
+    most_correct_num = len([i for i in load if i["Visitor"] == most_correct])
+
     most_incorrect = mode([i["Visitor"] for i in load if i["Result"] == -1])
+    most_incorrect_num = len([i for i in load if i["Visitor"] == most_incorrect])
+
     net_correct_dict = {}
     for i in load:
         if i["Visitor"] not in net_correct_dict.keys():
@@ -360,18 +366,22 @@ async def dateleaderboard(ctx):
         else:
             net_correct_dict[str(i["Visitor"])] += i["Result"]
     most_net_correct = sorted(net_correct_dict.items(), key=lambda x: x[1], reverse=True)[0][0]
+    most_net_correct_num = sum([i["Result"] for i in load if i["Visitor"] == most_net_correct])
+
     most_net_incorrect = sorted(net_correct_dict.items(), key=lambda x: x[1])[0][0]
+    most_net_incorrect_num = sum([i["Result"] for i in load if i["Visitor"] == most_net_incorrect])
+
     most_asked_question = mode([i["Question"] for i in load])
     most_correct_question = mode([i["Question"] for i in load if i["Result"] == 1])
     most_incorrect_question = mode([i["Question"] for i in load if i["Result"] == -1])
     most_given_answer = mode([i["Answer"] for i in load])
 
     leaderboard = discord.Embed(title="Dating Question Leaderboards", description="Statistics for the users")
-    leaderboard.add_field(name="Most Answers", value=f"<@{most_answers}>", inline=False)
-    leaderboard.add_field(name="Most Correct Answers", value=f"<@{most_correct}>", inline=False)
-    leaderboard.add_field(name="Most Incorrect Answers", value=f"<@{most_incorrect}>", inline=False)
-    leaderboard.add_field(name="Most Net Correct", value=f"<@{most_net_correct}>", inline=False)
-    leaderboard.add_field(name="Most Net Incorrect", value=f"<@{most_net_incorrect}>", inline=False)
+    leaderboard.add_field(name="Most Answers", value=f"<@{most_answers}> ({most_answers_num})", inline=False)
+    leaderboard.add_field(name="Most Correct Answers", value=f"<@{most_correct}> ({most_correct_num})", inline=False)
+    leaderboard.add_field(name="Most Incorrect Answers", value=f"<@{most_incorrect}> ({most_net_incorrect_num})", inline=False)
+    leaderboard.add_field(name="Most Net Correct", value=f"<@{most_net_correct}> ({most_net_correct_num})", inline=False)
+    leaderboard.add_field(name="Most Net Incorrect", value=f"<@{most_net_incorrect}> ({most_net_incorrect_num})", inline=False)
     leaderboard.add_field(name="Most Asked Question", value=f"{most_asked_question}", inline=False)
     leaderboard.add_field(name="Most Correctly Answered Question", value=f"{most_correct_question}", inline=False)
     leaderboard.add_field(name="Most Incorrectly Answered Question", value=f"{most_incorrect_question}", inline=False)
