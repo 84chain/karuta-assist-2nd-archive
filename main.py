@@ -28,7 +28,7 @@ restrictedguilds = []
 serversheet = []
 datingsheet = []
 eventsheet = []
-
+sheet = []
 
 ## INIT
 @bot.event
@@ -37,6 +37,7 @@ async def on_ready():
     global datingsheet
     global restrictedguilds
     global eventsheet
+    global sheet
     updates = bot.get_channel(816514583161602069)
 
     # GOOGLE SHEETS
@@ -290,7 +291,7 @@ async def visit(ctx):
     await send.delete()
     while True:
         try:
-            rows = datingsheet.row_count
+            rows = sheet.get_worksheet(2).row_count
             break
         except:
             pass
