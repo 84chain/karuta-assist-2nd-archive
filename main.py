@@ -146,20 +146,18 @@ def mode(arr):
 def rankUsers(load):
     net_correct = []
     for i in load:
-        if len([j for j in load if str(j["Visitor"]) == str(i["Visitor"])]) <= 10:
-            pass
+        if str(i["Visitor"]) not in [k[0] for k in net_correct]:
+            net_correct.append([str(i["Visitor"]), i["Result"], (1 if i["Result"] == 1 else 0)])
         else:
-            if str(i["Visitor"]) not in [k[0] for k in net_correct]:
-                net_correct.append([str(i["Visitor"]), i["Result"], 1])
-            else:
-                net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i[
-                    "Result"]
-                net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += 1
+            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i[
+                "Result"]
+            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += (
+                1 if i["Result"] == 1 else 0)
     ratios = []
     for i in net_correct:
         ratios.append({
             "Visitor": i[0],
-            "Ratio": i[1]/i[-1]
+            "Ratio": i[1]/i[-1] * ((max(len([j for j in load if str(j["Visitor"]) == str(i[0])]), 10) - 10)/len(load))
         })
     return ratios
 
@@ -461,7 +459,7 @@ async def datestats(ctx, *args):
     net_correct = sum([i["Result"] for i in userinfo])
     total_answers = len(userinfo)
 
-    ratio = net_correct/total_answers
+    ratio = net_correct/correct_answers * ((max(total_answers, 10) - 10)/len(load))
 
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     rank = ranks.index({
@@ -496,7 +494,7 @@ async def rankleaderboard(ctx):
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     desc = ""
     for i in ranks:
-        desc += f"<@{i['Visitor']}> - {Round(i['Ratio'] * 100)}%"
+        desc += f"- <@{i['Visitor']}> - {Round(i['Ratio'] * 100)}%\n"
     rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers:\n\n{desc}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
