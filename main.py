@@ -72,8 +72,12 @@ async def on_ready():
 
 @bot.command()
 async def die(ctx):
-    await ctx.send("Dying... :skull:")
-    sys.exit()
+    msg = ctx.message
+    if ctx.author.id == 166271462175408130:
+        await msg.reply("Dying... :skull:")
+        sys.exit()
+    else:
+        await msg.reply("You do not have access to this command")
 
 
 @bot.event
