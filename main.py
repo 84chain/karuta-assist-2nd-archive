@@ -28,7 +28,7 @@ restrictedguilds = []
 serversheet = []
 datingsheet = []
 eventsheet = []
-sheet = []
+
 
 ## INIT
 @bot.event
@@ -37,7 +37,6 @@ async def on_ready():
     global datingsheet
     global restrictedguilds
     global eventsheet
-    global sheet
     updates = bot.get_channel(816514583161602069)
 
     # GOOGLE SHEETS
@@ -289,12 +288,22 @@ async def visit(ctx):
         except:
             pass
     await send.delete()
+    trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+    tries = 0
     while True:
+        tries += 1
         try:
-            rows = sheet.get_worksheet(2).row_count
+            ind = 0
+            for i in datingsheet.get_all_records():
+                if i["Visitor"] == question.visitor and i["URL"] == question.url and i[
+                    "Question"] == question.question and i["Answer"] == correctanswer and i["Result"] == questionresult:
+                    ind = datingsheet.get_all_records().index(i)
+            await trymsg.delete()
             break
         except:
-            pass
+            tries += 1
+            await trymsg.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
+
         # except Exception as e:
         #     ex = discord.Embed(title="An Exception has occurred...",
         #                    description=f"Exception on https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
@@ -303,7 +312,7 @@ async def visit(ctx):
         #     await ctx.send(embed=ex)
         #     return
     await ctx.send(
-        f"Data sent! Thank you! Your response number is {rows}. For error reporting please having this number ready.")
+        f"Data sent! Thank you! Your response number is {ind - 2}. For error reporting please having this number ready.")
 
 
 @bot.command(aliases=["r2", "2r"])
