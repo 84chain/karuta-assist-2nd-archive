@@ -504,7 +504,7 @@ async def rankleaderboard(ctx):
             d.append(desc[j])
             j += 1
         else:
-            desclist.append(j)
+            desclist.append(i)
     page = 0
     rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desclist[page]}")
     rankembed.set_thumbnail(url=botIcon)
