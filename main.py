@@ -47,14 +47,14 @@ async def on_ready():
 
         sheet = client.open('Karuta Assist')
 
-        serversheet = sheet.get_worksheet(1)
+        servers = sheet.get_worksheet(1)
         datingsheet = sheet.get_worksheet(2)
         eventsheet = sheet.get_worksheet(3)
     except:
-        updates.send("Error connecting to Google Sheets, restarting...")
-        os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
+        await updates.send("Error connecting to Google Sheets, retrying...")
 
-    restrictedguilds = [int(i["Guild"]) for i in serversheet.get_all_records()]
+    serversheet = servers.get_all_records()
+    restrictedguilds = [int(i["Guild"]) for i in serversheet]
 
     e = discord.Embed(title=f"2nd instance status as of {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                       description="Active and inactive commands")
@@ -69,6 +69,11 @@ async def on_ready():
     await updates.send(embed=e)
     await bot.change_presence(activity=discord.Game(name="kinfo"))
     print("Bot is Ready")
+
+@bot.command()
+async def die(ctx):
+    await ctx.send("Dying... :skull:")
+    sys.exit()
 
 
 @bot.event
@@ -112,7 +117,7 @@ def Round(fl):
 
 
 def allowedChannels(guild):
-    return [int(i["Channel"]) for i in serversheet.get_all_records() if int(i["Guild"]) == guild]
+    return [int(i["Channel"]) for i in serversheet if int(i["Guild"]) == guild]
 
 
 def mode(arr):
@@ -121,7 +126,7 @@ def mode(arr):
     if modes == arr:
         return ""
     else:
-        return ", ".join([str(i) for i in modes])
+        return "\n".join([str(i) for i in modes])
 
 
 # CLASSES
@@ -288,12 +293,22 @@ async def visit(ctx):
         except:
             pass
     await send.delete()
-    trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
     tries = 0
+    loads = 0
     while True:
         try:
-            ind = datingsheet.get_all_records().index({
-                "Visitor": question.visitor,
+            load = datingsheet.get_all_records()
+            await loadmsg.delete()
+            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    while True:
+        try:
+            ind = load.index({
+                "Visitor": int(question.visitor),
                 "URL": question.url,
                 "Question": question.question,
                 "Answer": correctanswer,
@@ -301,11 +316,57 @@ async def visit(ctx):
             })
             await trymsg.delete()
             await ctx.send(
-                f"Data sent! Thank you! Your response number is {ind - 2}. For error reporting please having this number ready.")
+                f"Data sent! Thank you! Your response number is {ind + 2}. For error reporting please having this number ready.")
             break
         except:
             tries += 1
             await trymsg.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
+
+
+@bot.command(aliases=["dlb"])
+async def dateleaderboard(ctx):
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    loads = 0
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            await loadmsg.delete()
+            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    most_answers = mode([i["Visitor"] for i in load])
+    most_correct = mode([i["Visitor"] for i in load if i["Result"] == 1])
+    most_incorrect = mode([i["Visitor"] for i in load if i["Result"] == -1])
+    net_correct_dict = {}
+    for i in load:
+        if i["Visitor"] not in net_correct_dict.keys():
+            net_correct_dict[str(i["Visitor"])] = 0
+            net_correct_dict[str(i["Visitor"])] += i["Result"]
+        else:
+            net_correct_dict[str(i["Visitor"])] += i["Result"]
+    most_net_correct = sorted(net_correct_dict.items(), key=lambda x: x[1], reverse=True)[0][0]
+    most_net_incorrect = sorted(net_correct_dict.items(), key=lambda x: x[1])[0][0]
+    most_asked_question = mode([i["Question"] for i in load])
+    most_correct_question = mode([i["Question"] for i in load if i["Result"] == 1])
+    most_incorrect_question = mode([i["Question"] for i in load if i["Result"] == -1])
+    most_given_answer = mode([i["Answer"] for i in load])
+
+    leaderboard = discord.Embed(title="Dating Question Leaderboards", description="Statistics for the users")
+    leaderboard.add_field(name="Most Answers", value=f"<@{most_answers}>", inline=False)
+    leaderboard.add_field(name="Most Correct Answers", value=f"<@{most_correct}>", inline=False)
+    leaderboard.add_field(name="Most Incorrect Answers", value=f"<@{most_incorrect}>", inline=False)
+    leaderboard.add_field(name="Most Net Correct", value=f"<@{most_net_correct}>", inline=False)
+    leaderboard.add_field(name="Most Net Incorrect", value=f"<@{most_net_incorrect}>", inline=False)
+    leaderboard.add_field(name="Most Asked Question", value=f"{most_asked_question}", inline=False)
+    leaderboard.add_field(name="Most Correctly Answered Question", value=f"{most_correct_question}", inline=False)
+    leaderboard.add_field(name="Most Incorrectly Answered Question", value=f"{most_incorrect_question}", inline=False)
+    leaderboard.add_field(name="Most Given Answer", value=f"{most_given_answer}", inline=False)
+    leaderboard.set_thumbnail(url=botIcon)
+    leaderboard.set_footer(text="Net Correct and Incorrect are based off the sum of answers - when an answer is right, it is recorded as +1, 0 if neutral, and -1 if wrong")
+    await trymsg.delete()
+    await ctx.send(embed=leaderboard)
 
 
 @bot.command(aliases=["r2", "2r"])
