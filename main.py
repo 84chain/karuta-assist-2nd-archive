@@ -493,13 +493,40 @@ async def rankleaderboard(ctx):
             loads += 1
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
-    desc = ""
+    desc = []
     for i in range(len(ranks)):
-        desc += f"#{i+1} <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'] * 100, 2)}\n"
-    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desc}")
+        desc.append(f"{' ' * (len(ranks) - len(str(i)))}#{i+1} <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'] * 100, 2)}\n")
+    desclist = []
+    for i in desc:
+        j = 0
+        d = []
+        while j < 10:
+            d.append(desc[j])
+            j += 1
+        else:
+            desclist.append(j)
+    page = 0
+    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desclist[page]}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
-    await ctx.send(embed=rankembed)
+    r = await ctx.send(embed=rankembed)
+    await r.add_reaction("⬅")
+    await r.add_reaction("➡")
+    while True:
+        try:
+            def check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) in ["⬅", "➡"]
+
+            react = await bot.wait_for("reaction_add", check=check, timeout=60)
+            if str(react[0].emoji) == "⬅":
+                page -= 1
+            elif str(react[0].emoji) == "➡":
+                page += 1
+            edit = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desclist[page]}")
+            edit.set_thumbnail(url=botIcon)
+            await r.edit(embed=edit)
+        except asyncio.TimeoutError:
+            return
 
 @bot.command(aliases=["r2", "2r"])
 async def restart2(ctx):
