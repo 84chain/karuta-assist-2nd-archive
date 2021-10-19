@@ -472,8 +472,9 @@ async def datestats(ctx, *args):
     stats.add_field(name="Total wrong answers", value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers/total_answers * 100)}%)", inline=False)
     stats.add_field(name="Net Correct", value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(net_correct/total_answers * 100)}%)", inline=False)
     stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
+    stats.add_field(name="Score", value=ratio)
     stats.set_thumbnail(url=botIcon)
-    stats.set_footer(text="Rank is calculated by Net Correct / Total Correct × (max(total_answers, 10)) / All Answers")
+    stats.set_footer(text="Score is calculated by Net Correct / Total Correct × (max(total_answers, 10)) / All Answers")
     await trymsg.delete()
     await ctx.send(embed=stats)
 
@@ -495,7 +496,7 @@ async def rankleaderboard(ctx):
     desc = ""
     for i in ranks:
         desc += f"- <@{i['Visitor']}> - {i['Ratio'] * 100}\n"
-    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers:\n\n{desc}")
+    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desc}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
     await ctx.send(embed=rankembed)
