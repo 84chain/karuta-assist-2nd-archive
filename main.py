@@ -495,7 +495,7 @@ async def rankleaderboard(ctx):
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     desc = []
     for i in range(len(ranks)):
-        desc.append(f"{' ' * (len(str(len(ranks) + 1)) - len(str(i+1)))}#{i+1} <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'] * 100, 2)}\n")
+        desc.append(f"{i+1}. <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'] * 100, 2)}\n")
     desclist = [desc[10 * i:10 * (i + 1)] for i in range(Round(len(desc) / 10) + 1)]
     page = 0
     rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
