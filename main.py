@@ -291,28 +291,21 @@ async def visit(ctx):
     trymsg = await ctx.send("Waiting for Google Sheets... please wait")
     tries = 0
     while True:
-        tries += 1
         try:
-            ind = 0
-            for i in datingsheet.get_all_records():
-                if i["Visitor"] == question.visitor and i["URL"] == question.url and i[
-                    "Question"] == question.question and i["Answer"] == correctanswer and i["Result"] == questionresult:
-                    ind = datingsheet.get_all_records().index(i)
+            ind = datingsheet.get_all_records().index({
+                "Visitor": question.visitor,
+                "URL": question.url,
+                "Question": question.question,
+                "Answer": correctanswer,
+                "Result": questionresult
+            })
             await trymsg.delete()
+            await ctx.send(
+                f"Data sent! Thank you! Your response number is {ind - 2}. For error reporting please having this number ready.")
             break
         except:
             tries += 1
             await trymsg.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
-
-        # except Exception as e:
-        #     ex = discord.Embed(title="An Exception has occurred...",
-        #                    description=f"Exception on https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
-        #     ex.add_field(name="Reason", value=e)
-        #     ex.set_thumbnail(url=botIcon)
-        #     await ctx.send(embed=ex)
-        #     return
-    await ctx.send(
-        f"Data sent! Thank you! Your response number is {ind - 2}. For error reporting please having this number ready.")
 
 
 @bot.command(aliases=["r2", "2r"])
