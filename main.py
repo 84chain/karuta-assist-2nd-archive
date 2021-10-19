@@ -495,7 +495,7 @@ async def rankleaderboard(ctx):
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     desc = ""
     for i in ranks:
-        desc += f"- <@{i['Visitor']}> - {i['Ratio'] * 100}\n"
+        desc += f"- <@{i['Visitor']}>: {round(i['Ratio'] * 100, 2)}\n"
     rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desc}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
