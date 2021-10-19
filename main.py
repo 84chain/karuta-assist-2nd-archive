@@ -70,12 +70,21 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name="kinfo"))
     print("Bot is Ready")
 
-@bot.command()
-async def die(ctx):
+@bot.command(aliases=["d2"])
+async def die2(ctx):
     msg = ctx.message
     if ctx.author.id == 166271462175408130:
         await msg.reply("Dying... :skull:")
         sys.exit()
+    else:
+        await msg.reply("You do not have access to this command")
+
+
+@bot.command(aliases=["rc"])
+async def rollcall(ctx):
+    msg = ctx.message
+    if ctx.author.id == 166271462175408130:
+        await msg.reply("Instance 2 o7")
     else:
         await msg.reply("You do not have access to this command")
 
