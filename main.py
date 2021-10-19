@@ -476,6 +476,27 @@ async def datestats(ctx, *args):
     await ctx.send(embed=stats)
 
 
+@bot.command(aliases=["rlb"])
+async def rankleaderboard(ctx):
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    loads = 0
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            await loadmsg.delete()
+            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
+    rankembed = discord.Embed(title="Rank Leaderboard", description="Top answerers")
+    for i in ranks:
+        rankembed.add_field(name=f"<@{i['Visitor']}>", value=f"{Round(i['Ratio'] * 100)}%", inline=False)
+    rankembed.set_thumbnail(url=botIcon)
+    await trymsg.delete()
+    await ctx.send(embed=rankembed)
+
 @bot.command(aliases=["r2", "2r"])
 async def restart2(ctx):
     msg = ctx.message
