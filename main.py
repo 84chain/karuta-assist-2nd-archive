@@ -146,11 +146,15 @@ def mode(arr):
 def rankUsers(load):
     net_correct = []
     for i in load:
-        if str(i["Visitor"]) not in [k[0] for k in net_correct]:
-            net_correct.append([str(i["Visitor"]), i["Result"], 1])
+        if len([j for j in load if str(j["Visitor"]) == str(i["Visitor"])]) <= 10:
+            pass
         else:
-            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i["Result"]
-            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += 1
+            if str(i["Visitor"]) not in [k[0] for k in net_correct]:
+                net_correct.append([str(i["Visitor"]), i["Result"], 1])
+            else:
+                net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i[
+                    "Result"]
+                net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += 1
     ratios = []
     for i in net_correct:
         ratios.append({
