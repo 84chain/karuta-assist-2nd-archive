@@ -459,7 +459,7 @@ async def datestats(ctx, *args):
 
     ratio = net_correct/total_answers
 
-    ranks = sorted(rankUsers(load), key=lambda x: x[1], reverse=True)
+    ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     rank = ranks.index({
         "Visitor": str(user),
         "Ratio": ratio}) + 1
