@@ -157,7 +157,6 @@ def rankUsers(load):
             "Visitor": i[0],
             "Ratio": i[1]/i[-1]
         })
-    print(ratios)
     return ratios
 
 
@@ -460,7 +459,7 @@ async def datestats(ctx, *args):
 
     ratio = net_correct/total_answers
 
-    ranks = rankUsers(load) + 1
+    ranks = rankUsers(load)
     rank = ranks.index({
         "Visitor": str(user),
         "Ratio": ratio}) + 1
@@ -470,7 +469,7 @@ async def datestats(ctx, *args):
     stats.add_field(name="Total neutral answers", value=f"{neutral_answers} out of {total_answers} total answered ({Round(neutral_answers/total_answers * 100)}%)", inline=False)
     stats.add_field(name="Total wrong answers", value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers/total_answers * 100)}%)", inline=False)
     stats.add_field(name="Net Correct", value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(ratio * 100)}%)", inline=False)
-    stats.add_field(name="Rank", value=f"{rank} out of {len(ranks)}", inline=False)
+    stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
     stats.set_thumbnail(url=botIcon)
     stats.set_footer(text="Rank is calculated by Net Correct / Total Answers")
     await trymsg.delete()
