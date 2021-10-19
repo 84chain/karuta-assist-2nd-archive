@@ -353,10 +353,10 @@ async def dateleaderboard(ctx):
     most_answers_num = len([i for i in load if str(i["Visitor"]) == str(most_answers)])
 
     most_correct = mode([i["Visitor"] for i in load if i["Result"] == 1])
-    most_correct_num = len([i for i in load if str(i["Visitor"]) == str(most_correct)])
+    most_correct_num = len([i for i in load if str(i["Visitor"]) == str(most_correct) and i["Result"] == 1])
 
     most_incorrect = mode([i["Visitor"] for i in load if i["Result"] == -1])
-    most_incorrect_num = len([i for i in load if str(i["Visitor"]) == str(most_incorrect)])
+    most_incorrect_num = len([i for i in load if str(i["Visitor"]) == str(most_incorrect) and i["Result"] == -1])
 
     net_correct_dict = {}
     for i in load:
