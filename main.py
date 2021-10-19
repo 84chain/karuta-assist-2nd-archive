@@ -380,10 +380,10 @@ async def dateleaderboard(ctx):
 
     most_net_incorrect = sorted(net_correct_dict.items(), key=lambda x: x[1])[0][0]
     most_net_incorrect_num = sum([i["Result"] for i in load if str(i["Visitor"]) == str(most_net_incorrect)])
-    most_net_incorrect_1 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == 1])
-    most_net_incorrect_0 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == 0])
-    most_net_incorrect_neg1 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == -1])
-    most_net_incorrect_sum = len([i for i in load if str(i["Visitor"]) == str(most_net_correct)])
+    most_net_incorrect_1 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == 1])
+    most_net_incorrect_0 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == 0])
+    most_net_incorrect_neg1 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == -1])
+    most_net_incorrect_sum = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect)])
 
     most_asked_question = mode([i["Question"] for i in load])
     most_correct_question = mode([i["Question"] for i in load if i["Result"] == 1])
