@@ -143,6 +143,24 @@ def mode(arr):
         return "\n".join([str(i) for i in modes])
 
 
+def rankUsers(load):
+    net_correct = []
+    for i in load:
+        if str(i["Visitor"]) not in [k[0] for k in net_correct]:
+            net_correct.append([str(i["Visitor"]), i["Result"], 1])
+        else:
+            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i["Result"]
+            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += 1
+    ratios = []
+    for i in net_correct:
+        ratios.append({
+            "Visitor": i[0],
+            "Ratio": i[1]/i[-1]
+        })
+    print(ratios)
+    return ratios
+
+
 # CLASSES
 class Question:
     def __init__(self, kvi_d, url):
@@ -371,7 +389,6 @@ async def dateleaderboard(ctx):
             net_correct.append([str(i["Visitor"]), i["Result"]])
         else:
             net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += i["Result"]
-    print(net_correct)
     most_net_correct = sorted(net_correct, key=lambda x: x[1], reverse=True)[0][0]
     most_net_correct_num = sum([i["Result"] for i in load if str(i["Visitor"]) == str(most_net_correct)])
     most_net_correct_1 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == 1])
@@ -415,6 +432,49 @@ async def dateleaderboard(ctx):
         text="Net Correct and Incorrect are based off the sum of answers - when an answer is right, it is recorded as +1, 0 if neutral, and -1 if wrong")
     await trymsg.delete()
     await ctx.send(embed=leaderboard)
+
+
+@bot.command(aliases=["ds"])
+async def datestats(ctx, *args):
+    if args == ():
+        user = ctx.author.id
+    else:
+        user = args[0]
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    loads = 0
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            await loadmsg.delete()
+            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    userinfo = [i for i in load if str(i["Visitor"]) == str(user)]
+    correct_answers = len([i for i in userinfo if i["Result"] == 1])
+    wrong_answers = len([i for i in userinfo if i["Result"] == -1])
+    neutral_answers = len([i for i in userinfo if i["Result"] == 0])
+    net_correct = sum([i["Result"] for i in userinfo])
+    total_answers = len(userinfo)
+
+    ratio = net_correct/total_answers
+
+    ranks = rankUsers(load) + 1
+    rank = ranks.index({
+        "Visitor": str(user),
+        "Ratio": ratio}) + 1
+
+    stats = discord.Embed(title="Dating Stats", description=f"Showing dating answer statistics for <@{user}>")
+    stats.add_field(name="Total correct answers", value=f"{correct_answers} out of {total_answers} total answered ({Round(correct_answers/total_answers * 100)}%)", inline=False)
+    stats.add_field(name="Total neutral answers", value=f"{neutral_answers} out of {total_answers} total answered ({Round(neutral_answers/total_answers * 100)}%)", inline=False)
+    stats.add_field(name="Total wrong answers", value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers/total_answers * 100)}%)", inline=False)
+    stats.add_field(name="Net Correct", value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(ratio * 100)}%)", inline=False)
+    stats.add_field(name="Rank", value=f"{rank} out of {len(ranks)}", inline=False)
+    stats.set_thumbnail(url=botIcon)
+    stats.set_footer(text="Rank is calculated by Net Correct / Total Answers")
+    await trymsg.delete()
+    await ctx.send(embed=stats)
 
 
 @bot.command(aliases=["r2", "2r"])
