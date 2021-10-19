@@ -494,8 +494,8 @@ async def rankleaderboard(ctx):
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     desc = ""
-    for i in ranks:
-        desc += f"- <@{i['Visitor']}>: {round(i['Ratio'] * 100, 2)}\n"
+    for i in range(len(ranks)):
+        desc += f"#{i+1} <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'] * 100, 2)}\n"
     rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desc}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
