@@ -235,7 +235,7 @@ async def visit(ctx):
         await ctx.send(answer)
         await kvi.add_reaction("✅")
     else:
-        await ctx.send("No records found - do your best to answer the question, and check ✅ when finished")
+        norecords = await ctx.send("No records found - do your best to answer the question, and check ✅ when finished")
         await kvi.add_reaction("✅")
     while True:
         try:
@@ -257,7 +257,7 @@ async def visit(ctx):
                 numquestions = 3
             else:
                 numquestions = 2
-
+            await norecords.delete()
             response = discord.Embed(
                 title=f"You answered this question {['with a neutral result.', 'correctly!', 'incorrectly.'][questionresult]}",
                 description="Which answer did you put?")
@@ -331,6 +331,7 @@ async def visit(ctx):
             await trymsg.delete()
             await ctx.send(
                 f"Data sent! Thank you! Your response number is {ind + 2}. For error reporting please having this number ready.")
+            await resp.delete()
             break
         except:
             tries += 1
