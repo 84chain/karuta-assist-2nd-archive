@@ -364,21 +364,21 @@ async def dateleaderboard(ctx):
     most_incorrect_num = len([i for i in load if str(i["Visitor"]) == str(most_incorrect) and i["Result"] == -1])
     most_incorrect_sum = len([i for i in load if str(i["Visitor"]) == str(most_incorrect)])
 
-    net_correct_dict = {}
+    net_correct = []
     for i in load:
-        if i["Visitor"] not in net_correct_dict.keys():
-            net_correct_dict[str(i["Visitor"])] = 0
-            net_correct_dict[str(i["Visitor"])] += i["Result"]
+        if str(i["Visitor"]) not in [k[0] for k in net_correct]:
+            net_correct.append([str(i["Visitor"]), i["Result"]])
         else:
-            net_correct_dict[str(i["Visitor"])] += i["Result"]
-    most_net_correct = sorted(net_correct_dict.items(), key=lambda x: x[1], reverse=True)[0][0]
+            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += i["Result"]
+    print(net_correct)
+    most_net_correct = sorted(net_correct, key=lambda x: x[1], reverse=True)[0][0]
     most_net_correct_num = sum([i["Result"] for i in load if str(i["Visitor"]) == str(most_net_correct)])
     most_net_correct_1 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == 1])
     most_net_correct_0 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == 0])
     most_net_correct_neg1 = len([i for i in load if str(i["Visitor"]) == str(most_net_correct) and i["Result"] == -1])
     most_net_correct_sum = len([i for i in load if str(i["Visitor"]) == str(most_net_correct)])
 
-    most_net_incorrect = sorted(net_correct_dict.items(), key=lambda x: x[1])[0][0]
+    most_net_incorrect = sorted(net_correct, key=lambda x: x[1])[0][0]
     most_net_incorrect_num = sum([i["Result"] for i in load if str(i["Visitor"]) == str(most_net_incorrect)])
     most_net_incorrect_1 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == 1])
     most_net_incorrect_0 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == 0])
