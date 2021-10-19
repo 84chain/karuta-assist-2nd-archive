@@ -288,23 +288,11 @@ async def visit(ctx):
         except:
             pass
     await send.delete()
-    trymsg = await ctx.send("Due to Google API's rate limits, there may be some delay sending the data")
-    tries = 0
     while True:
         try:
-            indexes = []
-            for i in datingsheet.get_all_records():
-                if (str(i["Visitor"]) == str(question.visitor)
-                        and str(i["URL"]) == str(question.url)
-                        and str(i["Question"]) == str(question.question)
-                        and str(i["Answer"]) == str(correctanswer)
-                        and str(i["Result"]) == str(questionresult)):
-                    indexes.append(datingsheet.get_all_records().index(i))
-            index = indexes[-1]
+            rows = datingsheet.row_count
             break
         except:
-            tries += 1
-            await trymsg.edit(content=f"Due to Google API's rate limits, there may be some delay sending the data\nTries so far: {tries}")
             pass
         # except Exception as e:
         #     ex = discord.Embed(title="An Exception has occurred...",
@@ -313,9 +301,8 @@ async def visit(ctx):
         #     ex.set_thumbnail(url=botIcon)
         #     await ctx.send(embed=ex)
         #     return
-    await trymsg.delete()
     await ctx.send(
-        f"Data sent! Thank you! Your response number is {index + 2}. For error reporting please having this number ready.")
+        f"Data sent! Thank you! Your response number is {rows}. For error reporting please having this number ready.")
 
 
 @bot.command(aliases=["r2", "2r"])
@@ -338,35 +325,9 @@ async def on_message(message):
     # CHANNEL LIMITING
     if guild in restrictedguilds:
         if int(ch.id) in allowedChannels(guild):
-            if message.attachments == []:
-                await bot.process_commands(message)
-            else:
-                if int(message.author.id) == 646937666251915264:
-                    if message.reactions != []:
-                        await egg.send(f"https://discord.com/channels/{message.guild.id}/{ch.id}/{message.id}")
-                        time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
-                                        str(i["Server"]) == str(message.guild.id)][0]))
-                        for i in message.reactions:
-                            if str(i.emoji) == "🍬" or str(i.emoji) == "🍫":
-                                await ch.send(
-                                    f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(message.guild.id)][0]}>")
-                else:
-                    await bot.process_commands(message)
-    else:
-        if message.attachments == []:
             await bot.process_commands(message)
-        else:
-            if int(message.author.id) == 646937666251915264:
-                if message.reactions != []:
-                    await egg.send(f"https://discord.com/channels{message.guild.id}/{ch.id}/{message.id}")
-                    time.sleep(int([i["Grace Period"] for i in eventsheet.get_all_records() if
-                                    str(i["Server"]) == str(message.guild.id)][0]))
-                    for i in message.reactions:
-                        if str(i.emoji) == "🍬" or str(i.emoji) == "🍫":
-                            await ch.send(
-                                f"<@&{[i['Role ID'] for i in eventsheet.get_all_records() if str(i['Server']) == str(message.guild.id)][0]}>")
-            else:
-                await bot.process_commands(message)
+    else:
+        await bot.process_commands(message)
 
 
 bot.run(token)
