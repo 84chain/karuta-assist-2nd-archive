@@ -498,7 +498,7 @@ async def rankleaderboard(ctx):
         desc.append(f"{' ' * (len(ranks) - len(str(i)))}#{i+1} <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'] * 100, 2)}\n")
     desclist = [desc[10 * i:10 * (i + 1)] for i in range(Round(len(desc) / 10) + 1)]
     page = 0
-    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{desclist[page]}")
+    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
     r = await ctx.send(embed=rankembed)
