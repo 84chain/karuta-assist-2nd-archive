@@ -232,7 +232,7 @@ async def visit(ctx):
         answer = discord.Embed(title="Collected Data on this Question:", description="Most likely answer to be correct")
         if goodresults:
             answer.add_field(name="Correct answers",
-                             value=f"**Most likely answer** (`mode`)\n - {mode(goodresults)}\n*List of all answers*\n - {goodresults}",
+                             value=f"**Most likely answer** (`mode`)\n - {mode(goodresults) if mode(goodresults) != '' else 'None'}\n*List of all answers*\n - {', '.join(goodresults)}",
                              inline=False)
         else:
             answer.add_field(name="Correct answers",
@@ -240,14 +240,14 @@ async def visit(ctx):
                              inline=False)
             if neutralresults:
                 answer.add_field(name="Neutral answers",
-                                 value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults)}\n*List of all answers*\n - {neutralresults}",
+                                 value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults) if mode(neutralresults) != '' else 'None'}\n*List of all answers*\n - {', '.join(neutralresults)}",
                                  inline=False)
             else:
                 answer.add_field(name="Neutral answers",
                                  value="So far there are no neutral answers collected",
                                  inline=False)
                 answer.add_field(name="Wrong answers",
-                                 value=f"**List of all wrong answers**\n - {badresults}",
+                                 value=f"**List of all wrong answers**\n - {', '.join(badresults)}",
                                  inline=False)
         answer.set_thumbnail(url=botIcon)
         answer.set_footer(
@@ -277,7 +277,8 @@ async def visit(ctx):
                 numquestions = 3
             else:
                 numquestions = 2
-            await norecords.delete()
+            if not results:
+                await norecords.delete()
             response = discord.Embed(
                 title=f"You answered this question {['with a neutral result.', 'correctly!', 'incorrectly.'][questionresult]}",
                 description="Which answer did you put?")
