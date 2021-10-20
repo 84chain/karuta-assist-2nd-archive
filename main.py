@@ -147,17 +147,17 @@ def rankUsers(load):
     net_correct = []
     for i in load:
         if str(i["Visitor"]) not in [k[0] for k in net_correct]:
-            net_correct.append([str(i["Visitor"]), i["Result"], (1 if i["Result"] == 1 else 0)])
+            net_correct.append([str(i["Visitor"]), i["Result"], (1 if i["Result"] == 0 else 0)])
         else:
             net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i[
                 "Result"]
             net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += (
-                1 if i["Result"] == 1 else 0)
+                1 if i["Result"] == 0 else 0)
     ratios = []
     for i in net_correct:
         ratios.append({
             "Visitor": i[0],
-            "Ratio": (i[1]/i[-1] if i[-1] != 0 else 0) * (1 - 1 / len([j for j in load if str(j["Visitor"]) == str(i[0])]))
+            "Ratio": (i[1] + i[-1] * 0.5) * (1 - len([j for j in load if str(j["Visitor"]) == str(i[0])]) / len(load))
         })
     return ratios
 
@@ -232,7 +232,7 @@ async def visit(ctx):
         answer = discord.Embed(title="Collected Data on this Question:", description="Most likely answer to be correct")
         if goodresults:
             answer.add_field(name="Correct answers",
-                             value=f"**Most likely answer** (`mode`)\n - {mode(goodresults) if mode(goodresults) != '' else 'None'}\n*List of all answers*\n - {', '.join(goodresults)}",
+                             value=f"**Most likely answer** (`mode`)\n - {mode(goodresults) if mode(goodresults) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(goodresults)}",
                              inline=False)
         else:
             answer.add_field(name="Correct answers",
@@ -240,7 +240,7 @@ async def visit(ctx):
                              inline=False)
             if neutralresults:
                 answer.add_field(name="Neutral answers",
-                                 value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults) if mode(neutralresults) != '' else 'None'}\n*List of all answers*\n - {', '.join(neutralresults)}",
+                                 value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults) if mode(neutralresults) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(neutralresults)}",
                                  inline=False)
             else:
                 answer.add_field(name="Neutral answers",
@@ -461,7 +461,7 @@ async def datestats(ctx, *args):
     net_correct = sum([i["Result"] for i in userinfo])
     total_answers = len(userinfo)
 
-    ratio = (net_correct/correct_answers if correct_answers != 0 else 0) * (1 - 1 / total_answers)
+    ratio = (net_correct + neutral_answers * 0.5) * (1 - total_answers / len(load))
 
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     rank = ranks.index({
