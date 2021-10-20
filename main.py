@@ -262,7 +262,7 @@ async def visit(ctx):
             def check(reaction, user):
                 return user == ctx.author and str(reaction.emoji) == "✅"
 
-            await bot.wait_for("reaction_add", check=check, timeout=60)
+            await bot.wait_for("reaction_add", check=check, timeout=600)
             kvi_e = kvi.embeds[0]
             color = str(kvi_e.color)
             if color == "#ff0000":
