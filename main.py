@@ -157,7 +157,7 @@ def rankUsers(load):
     for i in net_correct:
         ratios.append({
             "Visitor": i[0],
-            "Ratio": (i[1]/i[-1] if i[-1] != 0 else 0) * math.log2((max(len([j for j in load if str(j["Visitor"]) == str(i[0])]), 10)) * len(load))
+            "Ratio": (i[1]/i[-1] if i[-1] != 0 else 0) * (1 + (max(len([j for j in load if str(j["Visitor"]) == str(i[0])]), 10) - 10) / len(load))
         })
     return ratios
 
@@ -460,7 +460,7 @@ async def datestats(ctx, *args):
     net_correct = sum([i["Result"] for i in userinfo])
     total_answers = len(userinfo)
 
-    ratio = (net_correct/correct_answers if correct_answers != 0 else 0) * math.log2(((max(total_answers, 10)) * len(load)))
+    ratio = (net_correct/correct_answers if correct_answers != 0 else 0) * (1 + ((max(total_answers, 10)) - 10) / len(load))
 
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     rank = ranks.index({
