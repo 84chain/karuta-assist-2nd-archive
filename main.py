@@ -476,7 +476,7 @@ async def datestats(ctx, *args):
     stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
     stats.add_field(name="Score", value=round(ratio, 2), inline=False)
     stats.set_thumbnail(url=botIcon)
-    stats.set_footer(text="Score is calculated by Net Correct / Total Correct × (max(total_answers, 10)) / All Answers")
+    stats.set_footer(text="Score is calculated by (Net Correct + Neutral Answers / 2) × (1 - Total Answers / All Answers)")
     await trymsg.delete()
     await ctx.send(embed=stats)
 
