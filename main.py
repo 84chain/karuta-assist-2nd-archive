@@ -252,7 +252,7 @@ async def visit(ctx):
         answer.set_thumbnail(url=botIcon)
         answer.set_footer(
             text="Note that all answers contain a random element - answering correctly may not earn you AP")
-        await ctx.send(answer)
+        await ctx.send(embed=answer)
         await kvi.add_reaction("✅")
     else:
         norecords = await ctx.send("No records found - do your best to answer the question, and check ✅ when finished")
