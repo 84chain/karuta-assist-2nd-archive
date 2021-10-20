@@ -197,6 +197,7 @@ class Question:
 # DATING QUESTIONS
 @bot.command(aliases=["vi"])
 async def visit(ctx):
+    msg = ctx.message
     while True:
         try:
             kvi = await bot.wait_for("message", check=containsEmbed(ctx.channel), timeout=10)
@@ -287,7 +288,7 @@ async def visit(ctx):
             if numquestions == 4:
                 response.add_field(name="Answer 4", value=question.answer4, inline=False)
             response.set_thumbnail(url=botIcon)
-            resp = await ctx.send(embed=response)
+            resp = await msg.reply(embed=response)
 
             await resp.add_reaction("1️⃣")
             await resp.add_reaction("2️⃣")
@@ -333,11 +334,11 @@ async def visit(ctx):
         try:
             load = datingsheet.get_all_records()
             await loadmsg.delete()
-            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
             break
         except:
             loads += 1
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    trymsg = await ctx.send("Waiting for Google Sheets... please wait")
     while True:
         try:
             ind = load.index({
@@ -348,7 +349,7 @@ async def visit(ctx):
                 "Result": questionresult
             })
             await trymsg.delete()
-            await ctx.send(
+            await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind + 2}. For error reporting please having this number ready.")
             await resp.delete()
             break
