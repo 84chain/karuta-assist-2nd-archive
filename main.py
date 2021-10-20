@@ -157,7 +157,7 @@ def rankUsers(load):
     for i in net_correct:
         ratios.append({
             "Visitor": i[0],
-            "Ratio": (i[1]/i[-1] if i[-1] != 0 else 0) * ((max(len([j for j in load if str(j["Visitor"]) == str(i[0])]), 10))/len(load)) * 10
+            "Ratio": (i[1]/i[-1] if i[-1] != 0 else 0) * math.log2((max(len([j for j in load if str(j["Visitor"]) == str(i[0])]), 10)) * len(load)) * 10
         })
     return ratios
 
@@ -460,7 +460,7 @@ async def datestats(ctx, *args):
     net_correct = sum([i["Result"] for i in userinfo])
     total_answers = len(userinfo)
 
-    ratio = (net_correct/correct_answers if correct_answers != 0 else 0) * ((max(total_answers, 10))/len(load)) * 10
+    ratio = (net_correct/correct_answers if correct_answers != 0 else 0) * math.log2(((max(total_answers, 10)) * len(load))) * 10
 
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     rank = ranks.index({
@@ -473,7 +473,7 @@ async def datestats(ctx, *args):
     stats.add_field(name="Total wrong answers", value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers/total_answers * 100)}%)", inline=False)
     stats.add_field(name="Net Correct", value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(net_correct/total_answers * 100)}%)", inline=False)
     stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
-    stats.add_field(name="Score", value=round(ratio, 2), inline=False)
+    stats.add_field(name="Score", value=round(ratio * 100, 2), inline=False)
     stats.set_thumbnail(url=botIcon)
     stats.set_footer(text="Score is calculated by Net Correct / Total Correct × (max(total_answers, 10)) / All Answers")
     await trymsg.delete()
