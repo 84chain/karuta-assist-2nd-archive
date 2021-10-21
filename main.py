@@ -351,7 +351,7 @@ async def visit(ctx):
             })
             await trymsg.delete()
             await msg.reply(
-                f"Data sent! Thank you! Your response number is {ind + 2}. For error reporting please having this number ready.")
+                f"Data sent! Thank you! Your response number is {ind + 2}. For error reporting please have this number ready.")
             await resp.delete()
             break
         except:
