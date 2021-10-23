@@ -354,7 +354,7 @@ async def visit(ctx):
             }) + 2
             await trymsg.delete()
             log.add_field(name="Index", value=ind, inline=False)
-            await logs.send()
+            await logs.send(embed=log)
             await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
             await resp.delete()
