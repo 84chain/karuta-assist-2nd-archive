@@ -29,8 +29,6 @@ serversheet = []
 datingsheet = []
 eventsheet = []
 
-logs = bot.get_channel(825955683996401685)
-updates = bot.get_channel(816514583161602069)
 
 ## INIT
 @bot.event
@@ -39,6 +37,8 @@ async def on_ready():
     global datingsheet
     global restrictedguilds
     global eventsheet
+
+    updates = bot.get_channel(816514583161602069)
 
     # GOOGLE SHEETS
     try:
@@ -198,6 +198,7 @@ class Question:
 # DATING QUESTIONS
 @bot.command(aliases=["vi"])
 async def visit(ctx):
+    logs = bot.get_channel(825955683996401685)
     msg = ctx.message
     while True:
         try:
@@ -341,8 +342,6 @@ async def visit(ctx):
             loads += 1
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
     trymsg = await ctx.send("Waiting for Google Sheets... please wait")
-    log = discord.Embed(title="Dating Answer Submitted", description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
-    log.set_thumbnail(url=botIcon)
     while True:
         try:
             ind = load.index({
@@ -353,6 +352,9 @@ async def visit(ctx):
                 "Result": questionresult
             }) + 2
             await trymsg.delete()
+            log = discord.Embed(title="Dating Answer Submitted",
+                                description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
+            log.set_thumbnail(url=botIcon)
             log.add_field(name="Index", value=ind, inline=False)
             await logs.send(embed=log)
             await msg.reply(
