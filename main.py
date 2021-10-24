@@ -203,10 +203,8 @@ async def visit(ctx):
     while True:
         try:
             kvi = await bot.wait_for("message", check=containsEmbed(ctx.channel), timeout=10)
-            kvi_e = kvi.embeds[0]
-            if kvi_e.title == "Visit Character":
-                await kvi.add_reaction("❓")
-                break
+            await kvi.add_reaction("❓")
+            break
         except asyncio.TimeoutError:
             return
         except IndexError:
