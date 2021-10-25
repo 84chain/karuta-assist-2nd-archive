@@ -350,7 +350,7 @@ async def visit(ctx):
                 correctanswer = question.answer2
             elif r[0].emoji == "1️⃣":
                 correctanswer = question.answer1
-            send = await ctx.send("Sending data to Google Sheets... please wait")
+            output = await ctx.send("Sending data to Google Sheets... please wait")
             break
         except asyncio.TimeoutError:
             await ctx.send("Timed out")
@@ -362,20 +362,18 @@ async def visit(ctx):
             break
         except:
             pass
-    await send.delete()
-    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    await output.edit(content="Loading the Sheet... please wait")
     tries = 0
     loads = 0
     while True:
         try:
             load = datingsheet.get_all_records()
-            await loadmsg.delete()
             break
         except:
             loads += 1
-            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+            await output.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
     nonemptyanswers = [i for i in load if i["URL"] is not None]
-    trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+    await output.edit(content="Waiting for Google Sheets... please wait")
     while True:
         try:
             ind = load.index({
@@ -385,7 +383,7 @@ async def visit(ctx):
                 "Answer": correctanswer,
                 "Result": questionresult
             }) + 2
-            await trymsg.delete()
+            await output.delete()
             log = discord.Embed(title="Dating Answer Submitted",
                                 description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
             log.set_thumbnail(url=botIcon)
@@ -407,7 +405,7 @@ async def visit(ctx):
             break
         except:
             tries += 1
-            await trymsg.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
+            await output.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
     if ind != len(nonemptyanswers) + 1:
         while True:
             try:
