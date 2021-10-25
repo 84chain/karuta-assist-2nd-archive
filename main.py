@@ -206,7 +206,7 @@ async def visit(ctx):
             kvi_e = kvi.embeds[0]
             if kvi_e.title == "Visit Character":
                 await kvi.add_reaction("❓")
-            break
+                break
         except asyncio.TimeoutError:
             return
         except IndexError:
