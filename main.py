@@ -549,21 +549,6 @@ async def on_message(message):
     if guild in restrictedguilds:
         if int(ch.id) in allowedChannels(guild):
             await bot.process_commands(message)
-    if int(ch.id) == 825955683996401685:
-        if message.embeds != []:
-            answerlog = message.embeds[0]
-            index = answerlog.fields[0].value
-            while True:
-                try:
-                    load = datingsheet.get_all_records()
-                    break
-                except:
-                    pass
-            ans = [i for i in load if i["URL"] is not None]
-            ind = len(ans) + 1
-            if int(index) != ind:
-                await ch.send("<@166271462175408130>")
-
     else:
         await bot.process_commands(message)
 
