@@ -173,7 +173,7 @@ def rankUsers(load):
     for i in net_correct:
         ratios.append({
             "Visitor": i[0],
-            "Ratio": (i[1] + i[-1] * 0.5) * (1 - len([j for j in load if str(j["Visitor"]) == str(i[0])]) / len(load))
+            "Ratio": i[1] * (1 - len([j for j in load if str(j["Visitor"]) == str(i[0])]) / len(load))
         })
     return ratios
 
@@ -524,7 +524,7 @@ async def datestats(ctx, *args):
     net_correct = sum([i["Result"] for i in userinfo])
     total_answers = len(userinfo)
 
-    ratio = (net_correct + neutral_answers * 0.5) * (1 - total_answers / len(load))
+    ratio = net_correct * (1 - total_answers / len(load))
 
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     rank = ranks.index({
@@ -548,7 +548,7 @@ async def datestats(ctx, *args):
     stats.add_field(name="Score", value=round(ratio, 2), inline=False)
     stats.set_thumbnail(url=botIcon)
     stats.set_footer(
-        text="Score is calculated by (Net Correct + Neutral Answers / 2) × (1 - Total Answers / All Answers)")
+        text="Score is calculated by Net Correct × (1 - Total Answers / All Answers)")
     await trymsg.delete()
     await ctx.send(embed=stats)
 
