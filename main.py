@@ -20,12 +20,11 @@ scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a641bf.json', scope)
 client = gspread.authorize(creds)
 
-botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902034363863146566/unknown.png"
+botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902044902936952862/unknown.png"
 hfp = open("hina.png", "rb")
 sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
-
 
 restrictedguilds = []
 serversheet = []
@@ -64,7 +63,8 @@ async def on_ready():
     e.add_field(name="Inactive commands", value="-Event pings",
                 inline=False)
     e.add_field(name="Other info",
-                value=f"This is the 2nd instance of Karuta Assist, you will be able to use all instances normally", inline=False)
+                value=f"This is the 2nd instance of Karuta Assist, you will be able to use all instances normally",
+                inline=False)
     e.set_thumbnail(url=botIcon)
     e.set_footer(text="Check kinfo for help!")
     await updates.send(embed=e)
@@ -109,7 +109,6 @@ async def rollcall(ctx):
         await msg.reply("Instance 2 o7")
     else:
         await msg.reply("You do not have access to this command")
-
 
 
 # BOT WAIT FOR CHECKS
@@ -390,7 +389,9 @@ async def visit(ctx):
                                 description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
             log.set_thumbnail(url=botIcon)
             log.add_field(name="Index", value=ind, inline=False)
-            log.add_field(name="Result", value=f"{[question.visitor, question.url, question.question, correctanswer, questionresult]}", inline=False)
+            log.add_field(name="Result",
+                          value=f"{[question.visitor, question.url, question.question, correctanswer, questionresult]}",
+                          inline=False)
             await logs.send(embed=log)
             await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
@@ -406,7 +407,7 @@ async def visit(ctx):
                 break
             except:
                 pass
-        await logs.send(f"<@166271462175408130>, {ind+1} deleted!")
+        await logs.send(f"<@166271462175408130>, {ind + 1} deleted!")
 
 
 @bot.command(aliases=["dlb"])
@@ -453,7 +454,8 @@ async def dateleaderboard(ctx):
     most_net_incorrect_num = sum([i["Result"] for i in load if str(i["Visitor"]) == str(most_net_incorrect)])
     most_net_incorrect_1 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == 1])
     most_net_incorrect_0 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == 0])
-    most_net_incorrect_neg1 = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == -1])
+    most_net_incorrect_neg1 = len(
+        [i for i in load if str(i["Visitor"]) == str(most_net_incorrect) and i["Result"] == -1])
     most_net_incorrect_sum = len([i for i in load if str(i["Visitor"]) == str(most_net_incorrect)])
 
     most_asked_question = mode([i["Question"] for i in load])
@@ -519,14 +521,23 @@ async def datestats(ctx, *args):
         "Ratio": ratio}) + 1
 
     stats = discord.Embed(title="Dating Stats", description=f"Showing dating answer statistics for <@{user}>")
-    stats.add_field(name="Total correct answers", value=f"{correct_answers} out of {total_answers} total answered ({Round(correct_answers/total_answers * 100)}%)", inline=False)
-    stats.add_field(name="Total neutral answers", value=f"{neutral_answers} out of {total_answers} total answered ({Round(neutral_answers/total_answers * 100)}%)", inline=False)
-    stats.add_field(name="Total wrong answers", value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers/total_answers * 100)}%)", inline=False)
-    stats.add_field(name="Net Correct", value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(net_correct/total_answers * 100)}%)", inline=False)
+    stats.add_field(name="Total correct answers",
+                    value=f"{correct_answers} out of {total_answers} total answered ({Round(correct_answers / total_answers * 100)}%)",
+                    inline=False)
+    stats.add_field(name="Total neutral answers",
+                    value=f"{neutral_answers} out of {total_answers} total answered ({Round(neutral_answers / total_answers * 100)}%)",
+                    inline=False)
+    stats.add_field(name="Total wrong answers",
+                    value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers / total_answers * 100)}%)",
+                    inline=False)
+    stats.add_field(name="Net Correct",
+                    value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(net_correct / total_answers * 100)}%)",
+                    inline=False)
     stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
     stats.add_field(name="Score", value=round(ratio, 2), inline=False)
     stats.set_thumbnail(url=botIcon)
-    stats.set_footer(text="Score is calculated by (Net Correct + Neutral Answers / 2) × (1 - Total Answers / All Answers)")
+    stats.set_footer(
+        text="Score is calculated by (Net Correct + Neutral Answers / 2) × (1 - Total Answers / All Answers)")
     await trymsg.delete()
     await ctx.send(embed=stats)
 
@@ -547,10 +558,11 @@ async def rankleaderboard(ctx):
     ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
     desc = []
     for i in range(len(ranks)):
-        desc.append(f"{i+1}. <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'], 2)}\n")
+        desc.append(f"{i + 1}. <@{ranks[i]['Visitor']}> {round(ranks[i]['Ratio'], 2)}\n")
     desclist = [desc[10 * i:10 * (i + 1)] for i in range(Round(len(desc) / 10) + 1)]
     page = 0
-    rankembed = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
+    rankembed = discord.Embed(title="Rank Leaderboard",
+                              description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
     rankembed.set_thumbnail(url=botIcon)
     await trymsg.delete()
     r = await ctx.send(embed=rankembed)
@@ -566,12 +578,12 @@ async def rankleaderboard(ctx):
                 page -= 1
             elif str(react[0].emoji) == "➡":
                 page += 1
-            edit = discord.Embed(title="Rank Leaderboard", description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
+            edit = discord.Embed(title="Rank Leaderboard",
+                                 description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
             edit.set_thumbnail(url=botIcon)
             await r.edit(embed=edit)
         except asyncio.TimeoutError:
             return
-
 
 
 @bot.command(aliases=["r2", "2r"])
