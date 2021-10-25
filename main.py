@@ -203,7 +203,9 @@ async def visit(ctx):
     while True:
         try:
             kvi = await bot.wait_for("message", check=containsEmbed(ctx.channel), timeout=10)
-            await kvi.add_reaction("❓")
+            kvi_e = kvi.embeds[0]
+            if kvi_e.title == "Visit Character":
+                await kvi.add_reaction("❓")
             break
         except asyncio.TimeoutError:
             return
@@ -354,6 +356,7 @@ async def visit(ctx):
                                 description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
             log.set_thumbnail(url=botIcon)
             log.add_field(name="Index", value=ind, inline=False)
+            log.add_field(name="Result", value=f"{[question.visitor, question.url, question.question, correctanswer, questionresult]}", inline=False)
             await logs.send(embed=log)
             await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
