@@ -21,8 +21,10 @@ creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a6
 client = gspread.authorize(creds)
 
 botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902034363863146566/unknown.png"
-fp = open("hina.png", "rb")
-profile = fp.read()
+hfp = open("hina.png", "rb")
+sfp = open("sayo.png", "rb")
+hina = hfp.read()
+sayo = sfp.read()
 
 
 restrictedguilds = []
@@ -66,7 +68,6 @@ async def on_ready():
     e.set_thumbnail(url=botIcon)
     e.set_footer(text="Check kinfo for help!")
     await updates.send(embed=e)
-    await bot.user.edit(avatar=profile)
     await bot.change_presence(activity=discord.Game(name="kinfo"))
     print("Bot is Ready")
 
@@ -80,7 +81,13 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_command(ctx):
-    await bot.user.edit(avatar=profile)
+    try:
+        if 6 < datetime.datetime.now().hour < 19:
+            await bot.user.edit(avatar=hina)
+        else:
+            await bot.user.edit(avatar=sayo)
+    except:
+        pass
 
 
 # KILLSWITCH
