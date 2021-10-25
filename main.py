@@ -231,6 +231,7 @@ class Question:
 @bot.command(aliases=["vi"])
 async def visit(ctx):
     logs = bot.get_channel(825955683996401685)
+    errors = bot.get_channel(902049222025682994)
     msg = ctx.message
     while True:
         try:
@@ -399,7 +400,7 @@ async def visit(ctx):
                           value=question.question, inline=False)
             log.add_field(name="Answer", value=correctanswer, inline=False)
             log.add_field(name="Result", value=questionresult, inline=False)
-            await logs.send(embed=log)
+            logmsg = await logs.send(embed=log)
             await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
             await resp.delete()
@@ -414,7 +415,10 @@ async def visit(ctx):
                 break
             except:
                 pass
-        await logs.send(f"<@166271462175408130>, {ind + 1} deleted!")
+        err = discord.Embed(title="Error fixed!", description=f"Error on https://discord.com/channels/816083586502361099/825955683996401685/{logmsg.id}")
+        err.add_field(name="Deleted index", value=ind+1, inline=False)
+        err.set_thumbnail(url=botIcon)
+        await errors.send(embed=err)
 
 
 @bot.command(aliases=["dlb"])
