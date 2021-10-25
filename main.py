@@ -158,6 +158,23 @@ def rankUsers(load):
     return ratios
 
 
+def subtract(x, y):
+    return [i for i in x if not i in y or y.remove(i)]
+
+
+def toString(d):
+    return f"{d['Visitor']}; {stripURL(d['URL'])}; {d['Question']}; {d['Answer']}"
+
+
+def stripURL(url):
+    s = str(url).split("-")
+    out = []
+    for i in s:
+        if i not in "01234567890":
+            out.append(i)
+    return "-".join(out[:-1])
+
+
 # CLASSES
 class Question:
     def __init__(self, kvi_d, url):
@@ -368,6 +385,7 @@ async def visit(ctx):
                 break
             except:
                 pass
+    await logs.send(f"<@166271462175408130>, {ind-1} deleted!")
 
 
 @bot.command(aliases=["dlb"])
@@ -532,6 +550,8 @@ async def rankleaderboard(ctx):
             await r.edit(embed=edit)
         except asyncio.TimeoutError:
             return
+
+
 
 @bot.command(aliases=["r2", "2r"])
 async def restart2(ctx):
