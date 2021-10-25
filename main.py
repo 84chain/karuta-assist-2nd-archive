@@ -66,6 +66,7 @@ async def on_ready():
     e.set_thumbnail(url=botIcon)
     e.set_footer(text="Check kinfo for help!")
     await updates.send(embed=e)
+    await bot.user.edit(avatar=profile)
     await bot.change_presence(activity=discord.Game(name="kinfo"))
     print("Bot is Ready")
 
@@ -146,6 +147,8 @@ def mode(arr):
     modes = sorted(dict(filter(lambda x: x[1] == max(counts.values()), counts.items())).keys())
     if modes == arr:
         return ""
+    elif arr == 1:
+        return arr[0]
     else:
         return "\n".join([str(i) for i in modes])
 
