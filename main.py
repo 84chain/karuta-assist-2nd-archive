@@ -385,7 +385,7 @@ async def visit(ctx):
                 break
             except:
                 pass
-    await logs.send(f"<@166271462175408130>, {ind-1} deleted!")
+        await logs.send(f"<@166271462175408130>, {ind+1} deleted!")
 
 
 @bot.command(aliases=["dlb"])
