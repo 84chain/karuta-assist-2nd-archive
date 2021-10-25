@@ -264,12 +264,17 @@ async def visit(ctx):
         goodresults = [i["Answer"] for i in results if i["Result"] == 1]
         neutralresults = [i["Answer"] for i in results if i["Result"] == 0]
         badresults = [i["Answer"] for i in results if i["Result"] == -1]
-        answer = discord.Embed(title="Collected Data on this Question:", description="Most likely answer to be correct")
         if goodresults:
+            answer = discord.Embed(title="Collected Data on this Question:",
+                                   description="Most likely answer to be correct",
+                                   colour=0x00ff00)
             answer.add_field(name="Correct answers",
                              value=f"**Most likely answer** (`mode`)\n - {mode(goodresults) if mode(goodresults) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(goodresults)}",
                              inline=False)
         else:
+            answer = discord.Embed(title="Collected Data on this Question:",
+                                   description="Most likely answer to be correct",
+                                   colour=0xf8e71c)
             answer.add_field(name="Correct answers",
                              value="So far there are no correct answers collected",
                              inline=False)
@@ -278,6 +283,9 @@ async def visit(ctx):
                                  value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults) if mode(neutralresults) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(neutralresults)}",
                                  inline=False)
             else:
+                answer = discord.Embed(title="Collected Data on this Question:",
+                                       description="Most likely answer to be correct",
+                                       colour=0xff0000)
                 answer.add_field(name="Neutral answers",
                                  value="So far there are no neutral answers collected",
                                  inline=False)
@@ -287,7 +295,7 @@ async def visit(ctx):
         answer.set_thumbnail(url=botIcon)
         answer.set_footer(
             text="Note that all answers contain a random element - answering correctly may not earn you AP")
-        await ctx.send(embed=answer)
+        hit = await msg.reply(embed=answer)
         await kvi.add_reaction("✅")
     else:
         norecords = await ctx.send("No records found - do your best to answer the question, and check ✅ when finished")
@@ -301,10 +309,13 @@ async def visit(ctx):
             kvi_e = kvi.embeds[0]
             color = str(kvi_e.color)
             if color == "#ff0000":
+                embedcolor = 0xff0000
                 questionresult = -1
             elif color == "#f8e71c":
+                embedcolor = 0xf8e71c
                 questionresult = 0
             elif color == "#00ff00":
+                embedcolor = 0x00ff00
                 questionresult = 1
             if question.answer4 != "":
                 numquestions = 4
@@ -314,9 +325,12 @@ async def visit(ctx):
                 numquestions = 2
             if not results:
                 await norecords.delete()
+            else:
+                await hit.delete()
             response = discord.Embed(
                 title=f"You answered this question {['with a neutral result.', 'correctly!', 'incorrectly.'][questionresult]}",
-                description="Which answer did you put?")
+                description="Which answer did you put?",
+                colour=embedcolor)
             response.add_field(name="Answer 1", value=question.answer1, inline=False)
             response.add_field(name="Answer 2", value=question.answer2, inline=False)
             if numquestions >= 3:
@@ -421,13 +435,13 @@ async def visit(ctx):
 
 @bot.command(aliases=["dlb"])
 async def dateleaderboard(ctx):
+    msg = ctx.message
     loadmsg = await ctx.send("Loading the Sheet... please wait")
     loads = 0
     while True:
         try:
             load = datingsheet.get_all_records()
-            await loadmsg.delete()
-            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
             break
         except:
             loads += 1
@@ -494,12 +508,13 @@ async def dateleaderboard(ctx):
     leaderboard.set_thumbnail(url=botIcon)
     leaderboard.set_footer(
         text="Net Correct and Incorrect are based off the sum of answers - when an answer is right, it is recorded as +1, 0 if neutral, and -1 if wrong")
-    await trymsg.delete()
-    await ctx.send(embed=leaderboard)
+    await loadmsg.delete()
+    await msg.reply(embed=leaderboard)
 
 
 @bot.command(aliases=["ds"])
 async def datestats(ctx, *args):
+    msg = ctx.message
     if args == ():
         user = ctx.author.id
     else:
@@ -509,57 +524,59 @@ async def datestats(ctx, *args):
     while True:
         try:
             load = datingsheet.get_all_records()
-            await loadmsg.delete()
-            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
             break
         except:
             loads += 1
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-    userinfo = [i for i in load if str(i["Visitor"]) == str(user)]
-    correct_answers = len([i for i in userinfo if i["Result"] == 1])
-    wrong_answers = len([i for i in userinfo if i["Result"] == -1])
-    neutral_answers = len([i for i in userinfo if i["Result"] == 0])
-    net_correct = sum([i["Result"] for i in userinfo])
-    total_answers = len(userinfo)
+    try:
+        userinfo = [i for i in load if str(i["Visitor"]) == str(user)]
+        correct_answers = len([i for i in userinfo if i["Result"] == 1])
+        wrong_answers = len([i for i in userinfo if i["Result"] == -1])
+        neutral_answers = len([i for i in userinfo if i["Result"] == 0])
+        net_correct = sum([i["Result"] for i in userinfo])
+        total_answers = len(userinfo)
 
-    ratio = net_correct * (1 - total_answers / len(load))
+        ratio = net_correct * (1 - total_answers / len(load))
 
-    ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
-    rank = ranks.index({
-        "Visitor": str(user),
-        "Ratio": ratio}) + 1
+        ranks = sorted(rankUsers(load), key=lambda x: x["Ratio"], reverse=True)
+        rank = ranks.index({
+            "Visitor": str(user),
+            "Ratio": ratio}) + 1
 
-    stats = discord.Embed(title="Dating Stats", description=f"Showing dating answer statistics for <@{user}>")
-    stats.add_field(name="Total correct answers",
-                    value=f"{correct_answers} out of {total_answers} total answered ({Round(correct_answers / total_answers * 100)}%)",
-                    inline=False)
-    stats.add_field(name="Total neutral answers",
-                    value=f"{neutral_answers} out of {total_answers} total answered ({Round(neutral_answers / total_answers * 100)}%)",
-                    inline=False)
-    stats.add_field(name="Total wrong answers",
-                    value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers / total_answers * 100)}%)",
-                    inline=False)
-    stats.add_field(name="Net Correct",
-                    value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(net_correct / total_answers * 100)}%)",
-                    inline=False)
-    stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
-    stats.add_field(name="Score", value=round(ratio, 2), inline=False)
-    stats.set_thumbnail(url=botIcon)
-    stats.set_footer(
-        text="Score is calculated by Net Correct × (1 - Total Answers / All Answers)")
-    await trymsg.delete()
-    await ctx.send(embed=stats)
+        stats = discord.Embed(title="Dating Stats", description=f"Showing dating answer statistics for <@{user}>")
+        stats.add_field(name="Total correct answers",
+                        value=f"{correct_answers} out of {total_answers} total answered ({Round(correct_answers / total_answers * 100)}%)",
+                        inline=False)
+        stats.add_field(name="Total neutral answers",
+                        value=f"{neutral_answers} out of {total_answers} total answered ({Round(neutral_answers / total_answers * 100)}%)",
+                        inline=False)
+        stats.add_field(name="Total wrong answers",
+                        value=f"{wrong_answers} out of {total_answers} total answered ({Round(wrong_answers / total_answers * 100)}%)",
+                        inline=False)
+        stats.add_field(name="Net Correct",
+                        value=f"{net_correct} -> [`{correct_answers}` + `0 × {neutral_answers}` - `{wrong_answers}`] out of {total_answers} ({Round(net_correct / total_answers * 100)}%)",
+                        inline=False)
+        stats.add_field(name="Rank", value=f"{rank} out of {len(ranks) + 1}", inline=False)
+        stats.add_field(name="Score", value=round(ratio, 2), inline=False)
+        stats.set_thumbnail(url=botIcon)
+        stats.set_footer(
+            text="Score is calculated by Net Correct × (1 - Total Answers / All Answers)")
+        await loadmsg.delete()
+        await msg.reply(embed=stats)
+    except:
+        await msg.reply("You have 0 entries in the database.")
 
 
 @bot.command(aliases=["rlb"])
 async def rankleaderboard(ctx):
+    msg = ctx.message
     loadmsg = await ctx.send("Loading the Sheet... please wait")
     loads = 0
     while True:
         try:
             load = datingsheet.get_all_records()
-            await loadmsg.delete()
-            trymsg = await ctx.send("Waiting for Google Sheets... please wait")
+            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
             break
         except:
             loads += 1
@@ -573,8 +590,8 @@ async def rankleaderboard(ctx):
     rankembed = discord.Embed(title="Rank Leaderboard",
                               description=f"Top answerers by score:\n\n{''.join(desclist[page % len(desclist)])}")
     rankembed.set_thumbnail(url=botIcon)
-    await trymsg.delete()
-    r = await ctx.send(embed=rankembed)
+    await loadmsg.delete()
+    r = await msg.reply(embed=rankembed)
     await r.add_reaction("⬅")
     await r.add_reaction("➡")
     while True:
