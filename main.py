@@ -20,7 +20,7 @@ scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a641bf.json', scope)
 client = gspread.authorize(creds)
 
-botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902044902936952862/unknown.png"
+botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902034363863146566/unknown.png"
 hfp = open("hina.png", "rb")
 sfp = open("sayo.png", "rb")
 hina = hfp.read()
@@ -389,9 +389,16 @@ async def visit(ctx):
                                 description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
             log.set_thumbnail(url=botIcon)
             log.add_field(name="Index", value=ind, inline=False)
-            log.add_field(name="Result",
-                          value=f"{[question.visitor, question.url, question.question, correctanswer, questionresult]}",
+            log.add_field(name="Visitor",
+                          value=question.visitor,
                           inline=False)
+            log.add_field(name="URL",
+                          value=stripURL(question.url),
+                          inline=False)
+            log.add_field(name="Question",
+                          value=question.question, inline=False)
+            log.add_field(name="Answer", value=correctanswer, inline=False)
+            log.add_field(name="Result", value=questionresult, inline=False)
             await logs.send(embed=log)
             await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
