@@ -21,13 +21,10 @@ creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a6
 client = gspread.authorize(creds)
 
 botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/881774334916591636/Screenshot_1295_1.png"
-botInvite = "https://discord.com/api/oauth2/authorize?client_id=779500602484195328&permissions=116800&scope=bot"
-serverInvite = "https://discord.gg/Z3XQ28AUxu"
 
 restrictedguilds = []
 serversheet = []
 datingsheet = []
-eventsheet = []
 
 
 ## INIT
@@ -36,7 +33,6 @@ async def on_ready():
     global serversheet
     global datingsheet
     global restrictedguilds
-    global eventsheet
 
     updates = bot.get_channel(816514583161602069)
 
@@ -50,7 +46,6 @@ async def on_ready():
 
         servers = sheet.get_worksheet(1)
         datingsheet = sheet.get_worksheet(2)
-        eventsheet = sheet.get_worksheet(3)
     except:
         await updates.send("Error connecting to Google Sheets, retrying...")
 
@@ -64,7 +59,7 @@ async def on_ready():
     e.add_field(name="Inactive commands", value="-Event pings",
                 inline=False)
     e.add_field(name="Other info",
-                value=f"This is the 2nd instance of Karuta Assist, you will be able to use both normally", inline=False)
+                value=f"This is the 2nd instance of Karuta Assist, you will be able to use all instances normally", inline=False)
     e.set_thumbnail(url=botIcon)
     e.set_footer(text="Check kinfo for help!")
     await updates.send(embed=e)
