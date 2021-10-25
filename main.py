@@ -336,6 +336,7 @@ async def visit(ctx):
         except:
             loads += 1
             await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    nonemptyanswers = [i for i in load if i["URL"] is not None]
     trymsg = await ctx.send("Waiting for Google Sheets... please wait")
     while True:
         try:
@@ -360,6 +361,13 @@ async def visit(ctx):
         except:
             tries += 1
             await trymsg.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
+    if ind != len(nonemptyanswers) + 1:
+        while True:
+            try:
+                datingsheet.delete_rows(ind - 1)
+                break
+            except:
+                pass
 
 
 @bot.command(aliases=["dlb"])
