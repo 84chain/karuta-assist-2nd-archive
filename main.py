@@ -20,7 +20,10 @@ scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a641bf.json', scope)
 client = gspread.authorize(creds)
 
-botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/881774334916591636/Screenshot_1295_1.png"
+botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902034363863146566/unknown.png"
+fp = open("hina.png", "rb")
+profile = fp.read()
+
 
 restrictedguilds = []
 serversheet = []
@@ -67,6 +70,19 @@ async def on_ready():
     print("Bot is Ready")
 
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, CommandNotFound):
+        return
+    raise error
+
+
+@bot.event
+async def on_command(ctx):
+    await bot.user.edit(avatar=profile)
+
+
+# KILLSWITCH
 @bot.command(aliases=["d2"])
 async def die2(ctx):
     msg = ctx.message
@@ -77,6 +93,7 @@ async def die2(ctx):
         await msg.reply("You do not have access to this command")
 
 
+# ROLL CALL
 @bot.command(aliases=["rc"])
 async def rollcall(ctx):
     msg = ctx.message
@@ -85,12 +102,6 @@ async def rollcall(ctx):
     else:
         await msg.reply("You do not have access to this command")
 
-
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, CommandNotFound):
-        return
-    raise error
 
 
 # BOT WAIT FOR CHECKS
