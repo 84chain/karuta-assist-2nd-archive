@@ -292,7 +292,7 @@ async def visit(ctx):
                 answer.add_field(name="Wrong answers",
                                  value=f"**List of all wrong answers**\n - {', '.join(badresults)}",
                                  inline=False)
-        answer.set_thumbnail(url=botIcon)
+        answer.set_thumbnail(url=question.url)
         answer.set_footer(
             text="Note that all answers contain a random element - answering correctly may not earn you AP")
         hit = await msg.reply(embed=answer)
@@ -337,7 +337,7 @@ async def visit(ctx):
                 response.add_field(name="Answer 3", value=question.answer3, inline=False)
             if numquestions == 4:
                 response.add_field(name="Answer 4", value=question.answer4, inline=False)
-            response.set_thumbnail(url=botIcon)
+            response.set_thumbnail(url=question.url)
             resp = await msg.reply(embed=response)
 
             await resp.add_reaction("1️⃣")
