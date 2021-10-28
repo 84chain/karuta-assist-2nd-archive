@@ -423,7 +423,7 @@ async def visit(ctx):
     if ind != len(nonemptyanswers) + 1:
         while True:
             try:
-                datingsheet.delete_rows(ind - 2)
+                datingsheet.delete_rows(ind - 1)
                 break
             except:
                 pass
