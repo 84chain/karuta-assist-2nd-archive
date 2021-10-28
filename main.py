@@ -423,12 +423,12 @@ async def visit(ctx):
     if ind != len(nonemptyanswers) + 1:
         while True:
             try:
-                datingsheet.delete_rows(ind - 1)
+                datingsheet.delete_rows(ind - 2)
                 break
             except:
                 pass
         err = discord.Embed(title="Error fixed!", description=f"Error on https://discord.com/channels/816083586502361099/825955683996401685/{logmsg.id}")
-        err.add_field(name="Deleted index", value=ind+1, inline=False)
+        err.add_field(name="Deleted index", value=ind, inline=False)
         err.set_thumbnail(url=botIcon)
         await errors.send(embed=err)
 
