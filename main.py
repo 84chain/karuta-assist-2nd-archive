@@ -437,13 +437,16 @@ async def visit(ctx):
 async def dateupdate(ctx, index, *args):
     msg = ctx.message
     answer = " ".join(args)
-    while True:
-        try:
-            datingsheet.update_cell(index, 4, answer)
-            await msg.reply(f"Answer on row {index} changed to `{answer}`")
-            break
-        except:
-            pass
+    if ctx.author.id == 166271462175408130:
+        while True:
+            try:
+                datingsheet.update_cell(index, 4, answer)
+                await msg.reply(f"Answer on row {index} changed to `{answer}`")
+                break
+            except:
+                pass
+    else:
+        await msg.reply("You do not have access to this command.")
 
 
 @bot.command(aliases=["dlb"])
