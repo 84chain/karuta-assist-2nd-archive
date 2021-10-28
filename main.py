@@ -28,7 +28,7 @@ sayo = sfp.read()
 
 restrictedguilds = []
 serversheet = []
-datingsheet = []
+datingsheet = gspread.Worksheet
 
 
 ## INIT
@@ -423,19 +423,27 @@ async def visit(ctx):
     if ind != (len(nonemptyanswers) + 1):
         while True:
             try:
-                datingsheet.delete_rows(ind - 1)
+                datingsheet.delete_rows(ind - 2)
                 break
             except Exception as e:
                 await logs.send(e)
         err = discord.Embed(title="Error fixed!", description=f"Error on https://discord.com/channels/816083586502361099/825955683996401685/{logmsg.id}")
-        err.add_field(name="Deleted index", value=ind, inline=False)
+        err.add_field(name="Deleted index", value=(ind+1), inline=False)
         err.set_thumbnail(url=botIcon)
         await errors.send(embed=err)
 
 
 @bot.command(aliases=["du"])
-async def dateupdate(index, *args):
+async def dateupdate(ctx, index, *args):
+    msg = ctx.message
     answer = " ".join(args)
+    while True:
+        try:
+            datingsheet.update_cell(index, 4, answer)
+            await msg.reply(f"Answer on row {index} changed to `{answer}`")
+            break
+        except:
+            pass
 
 
 @bot.command(aliases=["dlb"])
