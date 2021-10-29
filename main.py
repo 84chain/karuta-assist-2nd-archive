@@ -320,8 +320,10 @@ class Board:
         self.jeff_count = 0
         for i in self.visited:
             if self.jeff_count > 0 and i[0] == 'j':
+                self.jeff_count += 1
                 self.result.append(
                     f"You moved {directiondict[i[-1]]} and met Jeff Bezos. He took your other kidney and shipped you to the morgue. As the owner of Amazon, he doesn't pay shipping on anything!")
+                self.result.append("You died!")
                 return
             else:
                 if i[0] == '0':
@@ -790,7 +792,7 @@ async def minigame(ctx):
     res.add_field(name="Results", value=result, inline=False)
     res.add_field(name="Tiles", value="".join([squaredict[i[0]] for i in b.visited]), inline=False)
     res.add_field(name="Minigame Map", value="\n".join(desclist), inline=False)
-    res.add_field(name="Net Coins", value=f"{b.score} coins" + (f"- {b.jeff_count} kidney(s)" if b.jeff_count > 0 else ""), inline=False)
+    res.add_field(name="Net Coins", value=f"{b.score} coins" + (f" - {b.jeff_count} kidney(s)" if b.jeff_count > 0 else ""), inline=False)
     res.set_thumbnail(url=botIcon)
     await msg.reply(embed=res)
 
