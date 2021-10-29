@@ -824,26 +824,30 @@ async def coins(ctx, *args):
 @bot.command(aliases=["fd"])
 async def finddupes(ctx):
     msg = ctx.message
-    loadmsg = await ctx.send("Loading the Sheet... please wait")
-    loads = 0
-    while True:
-        try:
-            load = datingsheet.get_all_records()
-            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
-            break
-        except:
-            loads += 1
-            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-    step = 0
-    length = len(load)
-    double = []
-    waitmsg = await msg.reply(f"Searching entry #{step + 1} of {length}")
-    while step < length:
-        if load[step] == load[step + 1]:
-            double.append(step + 2)
-        step += 1
-        await waitmsg.edit(content=f"Searching entry #{step + 1} of {length}")
-    await waitmsg.edit(content=f"Consecutive dupes found: {', '.join([str(i) for i in double])}")
+    if ctx.author.id == 166271462175408130:
+        loadmsg = await ctx.send("Loading the Sheet... please wait")
+        loads = 0
+        while True:
+            try:
+                load = datingsheet.get_all_records()
+                await loadmsg.edit(content="Waiting for Google Sheets... please wait")
+                break
+            except:
+                loads += 1
+                await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+        step = 0
+        length = len(load)
+        double = []
+        waitmsg = await msg.reply(f"Searching entry #{step + 1} of {length}")
+        while step < length:
+            if load[step] == load[step + 1]:
+                double.append(step + 2)
+            step += 1
+            await waitmsg.edit(content=f"Searching entry #{step + 1} of {length}")
+        await waitmsg.delete()
+        await msg.reply(content=f"Consecutive dupes found: {', '.join([str(i) for i in double])}")
+    else:
+        await msg.reply("You do not have access to this command")
 
 
 @bot.command(aliases=["r2", "2r"])
