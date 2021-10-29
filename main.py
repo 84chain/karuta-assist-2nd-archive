@@ -317,9 +317,9 @@ class Board:
         return self.visited
 
     def calculate_score(self):
-        jeff_count = 0
+        self.jeff_count = 0
         for i in self.visited:
-            if jeff_count > 0 and i[0] == 'j':
+            if self.jeff_count > 0 and i[0] == 'j':
                 self.result.append(
                     f"You moved {directiondict[i[-1]]} and met Jeff Bezos. He took your other kidney and shipped you to the morgue. As the owner of Amazon, he doesn't pay shipping on anything!")
                 return
@@ -327,11 +327,11 @@ class Board:
                 if i[0] == '0':
                     self.result.append(f"You moved {directiondict[i[-1]]} and found nothing!")
                 elif i[0] == 'b':
-                    bonus = round(random.random() * 6)
+                    bonus = 1 + round(random.random() * 5)
                     self.result.append(f"You moved {directiondict[i[-1]]} and found {bonus} coins!")
                     self.score += bonus
                 elif i[0] == 'd':
-                    drop = round(random.random() * 6)
+                    drop = 1 + round(random.random() * 5)
                     self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
                     self.score -= drop
                 elif i[0] == 'r':
@@ -352,7 +352,7 @@ class Board:
                         f"You moved {directiondict[i[-1]]} and met Jeff Bezos. You gave him a kidney and he paid off your debt. As a Prime subscriber, you didn't have to pay shipping!")
                     if self.score < 0:
                         self.score = 0
-                    jeff_count += 1
+                    self.jeff_count += 1
                 elif i[0] == 't':
                     self.result.append(f"You moved {directiondict[i[-1]]} and fell into a trap! You died!")
                     return
@@ -790,7 +790,7 @@ async def minigame(ctx):
     res.add_field(name="Results", value=result, inline=False)
     res.add_field(name="Tiles", value="".join([squaredict[i[0]] for i in b.visited]), inline=False)
     res.add_field(name="Minigame Map", value="\n".join(desclist), inline=False)
-    res.add_field(name="Net Coins", value=f"{b.score} coins", inline=False)
+    res.add_field(name="Net Coins", value=f"{b.score} coins" + (f"- {b.jeff_count} kidney(s)" if b.jeff_count > 0 else ""), inline=False)
     res.set_thumbnail(url=botIcon)
     await msg.reply(embed=res)
 
