@@ -330,6 +330,7 @@ class Board:
                 self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
                 self.score *= 2
             elif i[0] == 'w':
+                self.result.append(f"You moved {directiondict[i[-1]]} and were warped to a random spot!")
                 self.pos = [random.choice([0, 1, 2, 3, 4]), random.choice([0, 1, 2, 3, 4])]
 
 
