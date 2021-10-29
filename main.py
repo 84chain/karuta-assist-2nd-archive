@@ -27,10 +27,10 @@ hina = hfp.read()
 sayo = sfp.read()
 
 boardpossiblestr = "0000000000dddddn2bbbbdddd"
-directiondict = {"u": "Up",
-                 "d": "Down",
-                 "r": "Right",
-                 "l": "Left"}
+directiondict = {"u": "up",
+                 "d": "down",
+                 "r": "right",
+                 "l": "left"}
 
 restrictedguilds = []
 serversheet = []
@@ -727,7 +727,7 @@ async def startgame(ctx, *args):
         await msg.reply(embed=helpembed)
     else:
         movestr = args[0][:10]
-        b = Board(ctx.author.id)
+        b = Board(str(ctx.author.id))
         emojimoves = b.moves_to_emoji(movestr)
         b.move(movestr)
         b.calculate_score()
