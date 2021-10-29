@@ -746,7 +746,7 @@ async def startgame(ctx, *args):
         result = "\n".join(b.result)
         res = discord.Embed(title="Minigame Result", description=f"Moves taken:\n{emojimoves}", colour=res_color)
         res.add_field(name="Results", value=result, inline=False)
-        res.add_field(name="Net Coins", value=f"{b.b.score} coins", inline=False)
+        res.add_field(name="Net Coins", value=f"{b.score} coins", inline=False)
         res.set_thumbnail(url=botIcon)
         await msg.reply(embed=res)
 
