@@ -26,7 +26,7 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "000000000000000r2bbbbbddd"
+boardpossiblestr = "000000000bbbdddr2bbbbdddd"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
@@ -327,10 +327,7 @@ class Board:
                 self.score = min(self.score, 0)
             elif i[0] == '2':
                 self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
-                if self.score >= 0:
-                    self.score *= 2
-                else:
-                    self.score = 0
+                self.score *= 2
 
 
 # COMMANDS
