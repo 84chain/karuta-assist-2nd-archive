@@ -26,7 +26,7 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "0000000twbbbdddr2bbbbdddd"
+boardpossiblestr = "00000wjtwbbbdddr2bbbbdddd"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
