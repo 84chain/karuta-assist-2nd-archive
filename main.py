@@ -26,7 +26,7 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "000000000bbbdddr2bbbbdddd"
+boardpossiblestr = "00000000wbbbdddr2bbbbdddd"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
@@ -35,7 +35,8 @@ squaredict = {"0": "0️⃣",
               "b": "🪙",
               "d": "⬇",
               "r": "🔪",
-              "2": "📈"}
+              "2": "📈",
+              "w": "🔁"}
 
 
 restrictedguilds = []
@@ -328,6 +329,8 @@ class Board:
             elif i[0] == '2':
                 self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
                 self.score *= 2
+            elif i[0] == 'w':
+                self.pos = [random.choice([0, 1, 2, 3, 4]), random.choice([0, 1, 2, 3, 4])]
 
 
 # COMMANDS
