@@ -325,7 +325,10 @@ class Board:
                 self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
                 self.score -= drop
             elif i[0] == 'r':
-                self.result.append(f"You moved {directiondict[i[-1]]} and got robbed of all your coins!")
+                if self.score >= 0:
+                    self.result.append(f"You moved {directiondict[i[-1]]} and got robbed of all your coins!")
+                else:
+                    self.result.append(f"You moved {directiondict[i[-1]]} and met a robber! But robbers rob coins and not debt!")
                 self.score = min(self.score, 0)
             elif i[0] == '2':
                 self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
