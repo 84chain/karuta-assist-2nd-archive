@@ -739,9 +739,9 @@ async def startgame(ctx, *args):
                 pass
         if b.score == 0:
             res_color = 0xf8e71c
-        elif b.b.score > 0:
+        elif b.score > 0:
             res_color = 0x00ff00
-        elif b.b.score < 0:
+        elif b.score < 0:
             res_color = 0xff0000
         result = "\n".join(b.result)
         res = discord.Embed(title="Minigame Result", description=f"Moves taken:\n{emojimoves}", colour=res_color)
