@@ -319,7 +319,7 @@ class Board:
     def calculate_score(self):
         jeff_count = 0
         for i in self.visited:
-            if jeff_count > 1 and i[0] == 'j':
+            if jeff_count > 0 and i[0] == 'j':
                 self.result.append(
                     f"You moved {directiondict[i[-1]]} and met Jeff Bezos. He took your other kidney and shipped you to the morgue. As the owner of Amazon, he doesn't pay shipping on anything!")
                 return
