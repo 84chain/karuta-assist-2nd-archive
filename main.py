@@ -210,6 +210,9 @@ def stripURL(url):
     return "-".join(out[:-1])
 
 
+def getCoins(load, id):
+    return sum([int(i["Coins"]) for i in load if str(id) == str(i["ID"])])
+
 # CLASSES
 class Question:
     def __init__(self, kvi_d, url):
@@ -785,6 +788,30 @@ async def startgame(ctx, *args):
             await gameresult.edit(embed=edit)
         except:
             pass
+
+
+@bot.command()
+async def coins(ctx, *args):
+    msg = ctx.message
+    if args == ():
+        user = ctx.author.id
+    else:
+        user = args[0]
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    loads = 0
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    coin = getCoins(load, user)
+    c = discord.Embed(title="Coins", description=f"Coins owned by <@{user}>")
+    c.add_field(name="Total coins", value=coin, inline=False)
+    c.set_thumbnail(url=botIcon)
+    await msg.reply(embed=c)
 
 
 @bot.command(aliases=["r2", "2r"])
