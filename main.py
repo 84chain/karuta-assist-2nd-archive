@@ -339,7 +339,7 @@ class Board:
                 self.score *= 2
             elif i[0] == 'w':
                 self.result.append(f"You moved {directiondict[i[-1]]} and were warped to a random spot!")
-            elif i[0] == 'i':
+            elif i[0] == 'j':
                 self.result.append(f"You moved {directiondict[i[-1]]} and met Jeff Bezos. You gave him a kidney and he paid off your debt. As a Prime subscriber, you didn't have to pay shipping!")
                 if self.score < 0:
                     self.score = 0
