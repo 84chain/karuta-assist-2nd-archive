@@ -317,35 +317,45 @@ class Board:
         return self.visited
 
     def calculate_score(self):
+        jeff_count = 0
         for i in self.visited:
-            if i[0] == '0':
-                self.result.append(f"You moved {directiondict[i[-1]]} and found nothing!")
-            elif i[0] == 'b':
-                bonus = round(random.random() * 6)
-                self.result.append(f"You moved {directiondict[i[-1]]} and found {bonus} coins!")
-                self.score += bonus
-            elif i[0] == 'd':
-                drop = round(random.random() * 6)
-                self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
-                self.score -= drop
-            elif i[0] == 'r':
-                if self.score >= 0:
-                    self.result.append(f"You moved {directiondict[i[-1]]} and got robbed of all your coins!")
-                else:
-                    self.result.append(f"You moved {directiondict[i[-1]]} and met a robber! But robbers rob coins and not debt!")
-                self.score = min(self.score, 0)
-            elif i[0] == '2':
-                self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
-                self.score *= 2
-            elif i[0] == 'w':
-                self.result.append(f"You moved {directiondict[i[-1]]} and were warped to a random spot!")
-            elif i[0] == 'j':
-                self.result.append(f"You moved {directiondict[i[-1]]} and met Jeff Bezos. You gave him a kidney and he paid off your debt. As a Prime subscriber, you didn't have to pay shipping!")
-                if self.score < 0:
-                    self.score = 0
-            elif i[0] == 't':
-                self.result.append(f"You moved {directiondict[i[-1]]} and fell into a trap! You died!")
+            if jeff_count > 1:
+                self.result.append(
+                    f"You moved {directiondict[i[-1]]} and met Jeff Bezos. He took your other kidney and shipped you to the morgue. As the owner of Amazon, he doesn't pay shipping on anything!")
                 return
+            else:
+                if i[0] == '0':
+                    self.result.append(f"You moved {directiondict[i[-1]]} and found nothing!")
+                elif i[0] == 'b':
+                    bonus = round(random.random() * 6)
+                    self.result.append(f"You moved {directiondict[i[-1]]} and found {bonus} coins!")
+                    self.score += bonus
+                elif i[0] == 'd':
+                    drop = round(random.random() * 6)
+                    self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
+                    self.score -= drop
+                elif i[0] == 'r':
+                    if self.score >= 0:
+                        self.result.append(f"You moved {directiondict[i[-1]]} and got robbed of all your coins!")
+                    else:
+                        self.result.append(
+                            f"You moved {directiondict[i[-1]]} and met a robber! But robbers rob coins and not debt!")
+                    self.score = min(self.score, 0)
+                elif i[0] == '2':
+                    self.result.append(
+                        f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
+                    self.score *= 2
+                elif i[0] == 'w':
+                    self.result.append(f"You moved {directiondict[i[-1]]} and were warped to a random spot!")
+                elif i[0] == 'j':
+                    self.result.append(
+                        f"You moved {directiondict[i[-1]]} and met Jeff Bezos. You gave him a kidney and he paid off your debt. As a Prime subscriber, you didn't have to pay shipping!")
+                    if self.score < 0:
+                        self.score = 0
+                    jeff_count += 1
+                elif i[0] == 't':
+                    self.result.append(f"You moved {directiondict[i[-1]]} and fell into a trap! You died!")
+                    return
 
 
 # COMMANDS
