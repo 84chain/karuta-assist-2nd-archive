@@ -363,7 +363,7 @@ class Board:
 # COMMANDS
 
 # DATING QUESTIONS
-@bot.command(aliases=["vi"])
+@bot.command(aliases=["vi", "VI"])
 async def visit(ctx):
     logs = bot.get_channel(825955683996401685)
     errors = bot.get_channel(902049222025682994)
@@ -819,6 +819,31 @@ async def coins(ctx, *args):
     c.add_field(name="Total coins", value=coin, inline=False)
     c.set_thumbnail(url=botIcon)
     await msg.reply(embed=c)
+
+
+@bot.command(aliases=["fd"])
+async def finddupes(ctx):
+    msg = ctx.message
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    loads = 0
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    step = 0
+    length = len(load)
+    double = []
+    waitmsg = await msg.reply(f"Searching entry #{step + 1} of {length}")
+    while step < length:
+        if load[step] == load[step + 1]:
+            double.append(step + 2)
+        step += 1
+        await waitmsg.edit(content=f"Searching entry #{step + 1} of {length}")
+    await waitmsg.edit(content=f"Consecutive dupes found: {', '.join([str(i) for i in double])}")
 
 
 @bot.command(aliases=["r2", "2r"])
