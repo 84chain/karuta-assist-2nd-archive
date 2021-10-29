@@ -31,13 +31,15 @@ directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
                  "l": "left"}
-squaredict = {"0": "0️⃣",
-              "b": "🪙",
-              "d": "⬇",
-              "r": "🔪",
-              "2": "📈",
-              "w": "🔁",
-              "t": "💀"}
+squaredict = {"0": "0️⃣", # nothing
+              "b": "🪙", # bonus
+              "d": "⬇", # drop
+              "r": "🔪", # robber
+              "2": "📈", # doubler
+              "w": "🔁", # warp
+              "t": "💀", # trap
+              "j": "💰" # jeff
+              }
 
 
 restrictedguilds = []
@@ -286,7 +288,9 @@ class Board:
 
     def move(self, str):
         for i in str:
-            if i.lower() == "d":
+            if self.board2dlist[self.pos[-1]][self.pos[0]] == "w":
+                self.pos = [random.choice([0, 1, 2, 3, 4]), random.choice([0, 1, 2, 3, 4])]
+            elif i.lower() == "d":
                 self.down()
             elif i.lower() == "u":
                 self.up()
@@ -335,7 +339,10 @@ class Board:
                 self.score *= 2
             elif i[0] == 'w':
                 self.result.append(f"You moved {directiondict[i[-1]]} and were warped to a random spot!")
-                self.pos = [random.choice([0, 1, 2, 3, 4]), random.choice([0, 1, 2, 3, 4])]
+            elif i[0] == 'i':
+                self.result.append(f"You moved {directiondict[i[-1]]} and met Jeff Bezos. You gave him a kidney and he paid off your debt. As a Prime subscriber, you didn't have to pay shipping!")
+                if self.score < 0:
+                    self.score = 0
             elif i[0] == 't':
                 self.result.append(f"You moved {directiondict[i[-1]]} and fell into a trap! You died!")
                 return
@@ -742,51 +749,40 @@ async def rankleaderboard(ctx):
             return
 
 
-@bot.command(aliases=["sg"])
-async def startgame(ctx, *args):
+@bot.command(aliases=["sg", "mg"])
+async def minigame(ctx):
     msg = ctx.message
-    if args == ():
-        helpembed = discord.Embed(title="Minigame Help", description="How to play the game")
-        helpembed.add_field(name="Arguments", value="Please send the direction string (`u/d/l/r for up/down/left/right`).\nYou can only input 10 maximum, no commas or spaces.", inline=False)
-        helpembed.add_field(name="An example", value="`ksg ulduruullr`", inline=False)
-        helpembed.set_thumbnail(url=botIcon)
-        await msg.reply(embed=helpembed)
-    else:
-        argstr = args[0][:10].lower()
-        if argstr == "random":
-            acc = ""
-            for i in range(10):
-                acc += random.choice(["u", "d", "l", "r"])
-            movestr = acc
-        else:
-            movestr = argstr
-        b = Board(str(ctx.author.id))
-        emojimoves = b.moves_to_emoji(movestr)
-        b.move(movestr)
-        b.calculate_score()
-        while True:
-            try:
-                minigamesheet.append_row([b.id, b.score])
-                break
-            except:
-                pass
-        if b.score == 0:
-            res_color = 0xf8e71c
-        elif b.score > 0:
-            res_color = 0x00ff00
-        elif b.score < 0:
-            res_color = 0xff0000
-        result = "\n".join(b.result)
-        desclist = []
-        for i in b.board2dlist:
-            desclist.append("".join([squaredict[k] for k in i]))
-        res = discord.Embed(title="Minigame Result", description=f"Moves taken:\n{emojimoves}", colour=res_color)
-        res.add_field(name="Results", value=result, inline=False)
-        res.add_field(name="Tiles", value="".join([squaredict[i[0]] for i in b.visited]), inline=False)
-        res.add_field(name="Minigame Map", value="\n".join(desclist), inline=False)
-        res.add_field(name="Net Coins", value=f"{b.score} coins", inline=False)
-        res.set_thumbnail(url=botIcon)
-        await msg.reply(embed=res)
+    acc = ""
+    for i in range(10):
+        acc += random.choice(["u", "d", "l", "r"])
+    movestr = acc
+    b = Board(str(ctx.author.id))
+    emojimoves = b.moves_to_emoji(movestr)
+    b.move(movestr)
+    b.calculate_score()
+    while True:
+        try:
+            minigamesheet.append_row([b.id, b.score])
+            break
+        except:
+            pass
+    if b.score == 0:
+        res_color = 0xf8e71c
+    elif b.score > 0:
+        res_color = 0x00ff00
+    elif b.score < 0:
+        res_color = 0xff0000
+    result = "\n".join(b.result)
+    desclist = []
+    for i in b.board2dlist:
+        desclist.append("".join([squaredict[k] for k in i]))
+    res = discord.Embed(title="Minigame Result", description=f"Moves taken:\n{emojimoves}", colour=res_color)
+    res.add_field(name="Results", value=result, inline=False)
+    res.add_field(name="Tiles", value="".join([squaredict[i[0]] for i in b.visited]), inline=False)
+    res.add_field(name="Minigame Map", value="\n".join(desclist), inline=False)
+    res.add_field(name="Net Coins", value=f"{b.score} coins", inline=False)
+    res.set_thumbnail(url=botIcon)
+    await msg.reply(embed=res)
 
 
 @bot.command()
