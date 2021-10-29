@@ -26,7 +26,7 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "00000000wbbbdddr2bbbbdddd"
+boardpossiblestr = "0000000twbbbdddr2bbbbdddd"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
@@ -36,7 +36,8 @@ squaredict = {"0": "0️⃣",
               "d": "⬇",
               "r": "🔪",
               "2": "📈",
-              "w": "🔁"}
+              "w": "🔁",
+              "t": "💀"}
 
 
 restrictedguilds = []
@@ -332,6 +333,9 @@ class Board:
             elif i[0] == 'w':
                 self.result.append(f"You moved {directiondict[i[-1]]} and were warped to a random spot!")
                 self.pos = [random.choice([0, 1, 2, 3, 4]), random.choice([0, 1, 2, 3, 4])]
+            elif i[0] == 't':
+                self.result.append(f"You moved {directiondict[i[-1]]} and fell into a trap! You died!")
+                return
 
 
 # COMMANDS
