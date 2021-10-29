@@ -26,11 +26,17 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "0000000000dddddn2bbbbdddd"
+boardpossiblestr = "0000000000bbdddr2bbbbdddd"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
                  "l": "left"}
+squaredict = {"0": "0️⃣",
+              "b": "🪙",
+              "d": "⬇",
+              "r": "🔪",
+              "2": "📈"}
+
 
 restrictedguilds = []
 serversheet = []
@@ -252,18 +258,26 @@ class Board:
     def up(self):
         if self.pos[-1] != 4:
             self.pos[-1] += 1
+        else:
+            self.pos[-1] = 0
 
     def down(self):
         if self.pos[-1] != 0:
             self.pos[-1] -= 1
+        else:
+            self.pos[-1] = 4
 
     def left(self):
         if self.pos[0] != 0:
             self.pos[0] -= 1
+        else:
+            self.pos[0] = 4
 
     def right(self):
         if self.pos[0] != 4:
             self.pos[0] += 1
+        else:
+            self.pos[0] = 0
 
     def move(self, str):
         for i in str:
@@ -306,7 +320,7 @@ class Board:
                 self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
                 self.score -= drop
             elif i[0] == 'n':
-                self.result.append(f"You moved {directiondict[i[-1]]} and lost all your coins!")
+                self.result.append(f"You moved {directiondict[i[-1]]} and got robbed of all your coins!")
                 self.score = min(self.score, 0)
             elif i[0] == '2':
                 self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
@@ -726,7 +740,14 @@ async def startgame(ctx, *args):
         helpembed.set_thumbnail(url=botIcon)
         await msg.reply(embed=helpembed)
     else:
-        movestr = args[0][:10]
+        argstr = args[0][:10].lower()
+        if argstr == "random":
+            acc = ""
+            for i in range(10):
+                acc += random.choice(["u", "d", "l", "r"])
+            movestr = acc
+        else:
+            movestr = argstr
         b = Board(str(ctx.author.id))
         emojimoves = b.moves_to_emoji(movestr)
         b.move(movestr)
@@ -748,7 +769,22 @@ async def startgame(ctx, *args):
         res.add_field(name="Results", value=result, inline=False)
         res.add_field(name="Net Coins", value=f"{b.score} coins", inline=False)
         res.set_thumbnail(url=botIcon)
-        await msg.reply(embed=res)
+        gameresult = await msg.reply(embed=res)
+        await gameresult.add_reaction("📋")
+        try:
+            def check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) == "📋"
+
+            await bot.wait_for("reaction_add", check=check, timeout=60)
+            desclist = []
+            for i in b.board2dlist:
+                desclist.append("".join([squaredict[k] for k in i]))
+            edit = discord.Embed(title="Minigame Board", description="\n".join(desclist), colour=res_color)
+            edit.set_thumbnail(url=botIcon)
+            await gameresult.edit(embed=edit)
+        except:
+            pass
+
 
 @bot.command(aliases=["r2", "2r"])
 async def restart2(ctx):
