@@ -324,7 +324,7 @@ class Board:
                 drop = round(random.random() * 6)
                 self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
                 self.score -= drop
-            elif i[0] == 'n':
+            elif i[0] == 'r':
                 self.result.append(f"You moved {directiondict[i[-1]]} and got robbed of all your coins!")
                 self.score = min(self.score, 0)
             elif i[0] == '2':
