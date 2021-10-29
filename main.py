@@ -801,7 +801,7 @@ async def coins(ctx, *args):
     loads = 0
     while True:
         try:
-            load = datingsheet.get_all_records()
+            load = minigamesheet.get_all_records()
             await loadmsg.edit(content="Waiting for Google Sheets... please wait")
             break
         except:
