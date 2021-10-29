@@ -261,16 +261,16 @@ class Board:
         self.score = 0
 
     def up(self):
-        if self.pos[-1] != 4:
-            self.pos[-1] += 1
-        else:
-            self.pos[-1] = 0
-
-    def down(self):
         if self.pos[-1] != 0:
             self.pos[-1] -= 1
         else:
             self.pos[-1] = 4
+
+    def down(self):
+        if self.pos[-1] != 4:
+            self.pos[-1] += 1
+        else:
+            self.pos[-1] = 0
 
     def left(self):
         if self.pos[0] != 0:
