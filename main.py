@@ -779,7 +779,8 @@ async def startgame(ctx, *args):
             desclist = []
             for i in b.board2dlist:
                 desclist.append("".join([squaredict[k] for k in i]))
-            edit = discord.Embed(title="Minigame Board", description="\n".join(desclist), colour=res_color)
+            edit = discord.Embed(title="Minigame Board", description=f"Moves taken:\n{emojimoves}", colour=res_color)
+            edit.add_field(name="Map", value="\n".join(desclist), inline=False)
             edit.set_thumbnail(url=botIcon)
             await gameresult.edit(embed=edit)
         except:
