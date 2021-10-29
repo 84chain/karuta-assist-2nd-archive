@@ -26,10 +26,16 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
+boardpossiblestr = "0000000000dddddn2bbbbdddd"
+directiondict = {"u": "Up",
+                 "d": "Down",
+                 "r": "Right",
+                 "l": "Left"}
+
 restrictedguilds = []
 serversheet = []
 datingsheet = gspread.Worksheet
-
+minigamesheet = gspread.Worksheet
 
 ## INIT
 @bot.event
@@ -37,6 +43,7 @@ async def on_ready():
     global serversheet
     global datingsheet
     global restrictedguilds
+    global minigamesheet
 
     updates = bot.get_channel(816514583161602069)
 
@@ -50,6 +57,8 @@ async def on_ready():
 
         servers = sheet.get_worksheet(1)
         datingsheet = sheet.get_worksheet(2)
+        minigamesheet = sheet.get_worksheet(5)
+
     except:
         await updates.send("Error connecting to Google Sheets, retrying...")
 
@@ -223,6 +232,85 @@ class Question:
                 "answer 2": self.answer2,
                 "answer 3": self.answer3,
                 "answer 4": self.answer4}
+
+
+class Board:
+    def __init__(self, player):
+        self.id = player
+        self.boardlist = list(boardpossiblestr)
+        random.shuffle(self.boardlist)
+        self.board2dlist = [self.boardlist[0:5],
+                            self.boardlist[5:10],
+                            self.boardlist[10:15],
+                            self.boardlist[15:20],
+                            self.boardlist[20:]]
+        self.pos = [0, 0]
+        self.visited = []
+        self.result = []
+        self.score = 0
+
+    def up(self):
+        if self.pos[-1] != 4:
+            self.pos[-1] += 1
+
+    def down(self):
+        if self.pos[-1] != 0:
+            self.pos[-1] -= 1
+
+    def left(self):
+        if self.pos[0] != 0:
+            self.pos[0] -= 1
+
+    def right(self):
+        if self.pos[0] != 4:
+            self.pos[0] += 1
+
+    def move(self, str):
+        for i in str:
+            if i.lower() == "d":
+                self.down()
+            elif i.lower() == "u":
+                self.up()
+            elif i.lower() == "r":
+                self.right()
+            elif i.lower() == "l":
+                self.left()
+            self.visited.append((self.board2dlist[self.pos[-1]][self.pos[0]], i.lower()))
+
+    def moves_to_emoji(self, str):
+        emoji = ""
+        for i in str:
+            if i.lower() == "d":
+                emoji += "⬇"
+            elif i.lower() == "u":
+                emoji += "⬆"
+            elif i.lower() == "r":
+                emoji += "➡"
+            elif i.lower() == "l":
+                emoji += "⬅"
+        return emoji
+
+    def return_path(self):
+        return self.visited
+
+    def calculate_score(self):
+        for i in self.visited:
+            if i[0] == '0':
+                self.result.append(f"You moved {directiondict[i[-1]]} and found nothing!")
+            elif i[0] == 'b':
+                bonus = round(random.random() * 6)
+                self.result.append(f"You moved {directiondict[i[-1]]} and found {bonus} coins!")
+                self.score += bonus
+            elif i[0] == 'd':
+                drop = round(random.random() * 6)
+                self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
+                self.score -= drop
+            elif i[0] == 'n':
+                self.result.append(f"You moved {directiondict[i[-1]]} and lost all your coins!")
+                self.score = min(self.score, 0)
+            elif i[0] == '2':
+                self.result.append(f"You moved {directiondict[i[-1]]} and found a special coin that doubles your coins!")
+                self.score *= 2
 
 
 # COMMANDS
@@ -627,6 +715,40 @@ async def rankleaderboard(ctx):
         except asyncio.TimeoutError:
             return
 
+
+@bot.command(aliases=["sg"])
+async def startgame(ctx, *args):
+    msg = ctx.message
+    if args == ():
+        helpembed = discord.Embed(title="Minigame Help", description="How to play the game")
+        helpembed.add_field(name="Arguments", value="Please send the direction string (`u/d/l/r for up/down/left/right`).\nYou can only input 10 maximum, no commas or spaces.", inline=False)
+        helpembed.add_field(name="An example", value="`ksg ulduruullr`", inline=False)
+        helpembed.set_thumbnail(url=botIcon)
+        await msg.reply(embed=helpembed)
+    else:
+        movestr = args[0][:10]
+        b = Board(ctx.author.id)
+        emojimoves = b.moves_to_emoji(movestr)
+        b.move(movestr)
+        b.calculate_score()
+        while True:
+            try:
+                minigamesheet.append_row([b.id, b.score])
+                break
+            except:
+                pass
+        if b.score == 0:
+            res_color = 0xf8e71c
+        elif b.b.score > 0:
+            res_color = 0x00ff00
+        elif b.b.score < 0:
+            res_color = 0xff0000
+        result = "\n".join(b.result)
+        res = discord.Embed(title="Minigame Result", description=f"Moves taken:\n{emojimoves}", colour=res_color)
+        res.add_field(name="Results", value=result, inline=False)
+        res.add_field(name="Net Coins", value=f"{b.b.score} coins", inline=False)
+        res.set_thumbnail(url=botIcon)
+        await msg.reply(embed=res)
 
 @bot.command(aliases=["r2", "2r"])
 async def restart2(ctx):
