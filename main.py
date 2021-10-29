@@ -400,7 +400,7 @@ async def visit(ctx):
         answer.set_thumbnail(url=question.url)
         answer.set_footer(
             text="Note that all answers contain a random element - answering correctly may not earn you AP")
-        hit = await msg.reply(embed=answer)
+        await msg.reply(embed=answer)
         await kvi.add_reaction("✅")
     else:
         norecords = await ctx.send("No records found - do your best to answer the question, and check ✅ when finished")
@@ -430,8 +430,6 @@ async def visit(ctx):
                 numquestions = 2
             if not results:
                 await norecords.delete()
-            else:
-                await hit.delete()
             response = discord.Embed(
                 title=f"You answered this question {['with a neutral result.', 'correctly!', 'incorrectly.'][questionresult]}",
                 description="Which answer did you put?",
