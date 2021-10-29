@@ -774,26 +774,16 @@ async def startgame(ctx, *args):
         elif b.score < 0:
             res_color = 0xff0000
         result = "\n".join(b.result)
+        desclist = []
+        for i in b.board2dlist:
+            desclist.append("".join([squaredict[k] for k in i]))
         res = discord.Embed(title="Minigame Result", description=f"Moves taken:\n{emojimoves}", colour=res_color)
         res.add_field(name="Results", value=result, inline=False)
+        res.add_field(name="Tiles", value="".join([squaredict[i[0]] for i in b.visited]), inline=False)
+        res.add_field(name="Minigame Map", value="\n".join(desclist), inline=False)
         res.add_field(name="Net Coins", value=f"{b.score} coins", inline=False)
         res.set_thumbnail(url=botIcon)
-        gameresult = await msg.reply(embed=res)
-        await gameresult.add_reaction("📋")
-        try:
-            def check(reaction, user):
-                return user == ctx.author and str(reaction.emoji) == "📋"
-
-            await bot.wait_for("reaction_add", check=check, timeout=60)
-            desclist = []
-            for i in b.board2dlist:
-                desclist.append("".join([squaredict[k] for k in i]))
-            edit = discord.Embed(title="Minigame Board", description=f"Moves taken:\n{emojimoves}", colour=res_color)
-            edit.add_field(name="Map", value="\n".join(desclist), inline=False)
-            edit.set_thumbnail(url=botIcon)
-            await gameresult.edit(embed=edit)
-        except:
-            pass
+        await msg.reply(embed=res)
 
 
 @bot.command()
