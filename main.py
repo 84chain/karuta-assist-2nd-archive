@@ -26,7 +26,7 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "00000wjtwbbbdddr2bbbbdddd"
+boardpossiblestr = "0wjtwbdr2"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
@@ -250,7 +250,7 @@ class Question:
 class Board:
     def __init__(self, player):
         self.id = player
-        self.boardlist = list(boardpossiblestr)
+        self.boardlist = [random.choice(list(boardpossiblestr)) for i in range(25)]
         random.shuffle(self.boardlist)
         self.board2dlist = [self.boardlist[0:5],
                             self.boardlist[5:10],
@@ -840,8 +840,11 @@ async def finddupes(ctx):
         double = []
         waitmsg = await msg.reply(f"Searching entry #{step + 1} of {length}")
         while step < length:
-            if load[step] == load[step + 1]:
-                double.append(step + 2)
+            try:
+                if load[step] == load[step + 1]:
+                    double.append(step + 2)
+            except:
+                pass
             step += 1
             await waitmsg.edit(content=f"Searching entry #{step + 1} of {length}")
         await waitmsg.delete()
