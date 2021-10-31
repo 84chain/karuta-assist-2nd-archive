@@ -26,7 +26,7 @@ sfp = open("sayo.png", "rb")
 hina = hfp.read()
 sayo = sfp.read()
 
-boardpossiblestr = "0wjtwbdr2"
+boardpossiblestr = "00000wjtwbbdddr2"
 directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
@@ -545,7 +545,7 @@ async def visit(ctx):
                           value=question.question, inline=False)
             log.add_field(name="Answer", value=correctanswer, inline=False)
             log.add_field(name="Result", value=questionresult, inline=False)
-            logmsg = await logs.send(embed=log)
+            await logs.send(embed=log)
             await msg.reply(
                 f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
             await resp.delete()
@@ -763,10 +763,27 @@ async def minigame(ctx):
     b.calculate_score()
     while True:
         try:
-            minigamesheet.append_row([b.id, b.score])
+            load = minigamesheet.get_all_records()
             break
         except:
             pass
+    users = [str(i["ID"]) for i in load]
+    if str(ctx.author.id) in users:
+        user = [i for i in load if str(i["URL"]) == str(ctx.author.id)][0]
+        ind = load.index(user)
+        coins = user["Coins"]
+        while True:
+            try:
+                minigamesheet.update_cell(ind + 2, 2, coins + b.score)
+            except:
+                pass
+    else:
+        while True:
+            try:
+                minigamesheet.append_row([b.id, b.score])
+                break
+            except:
+                pass
     if b.score == 0:
         res_color = 0xf8e71c
     elif b.score > 0:
