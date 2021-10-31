@@ -329,11 +329,11 @@ class Board:
                 if i[0] == '0':
                     self.result.append(f"You moved {directiondict[i[-1]]} and found nothing!")
                 elif i[0] == 'b':
-                    bonus = 1 + round(random.random() * 5)
+                    bonus = 1 + round(random.random() * 2)
                     self.result.append(f"You moved {directiondict[i[-1]]} and found {bonus} coins!")
                     self.score += bonus
                 elif i[0] == 'd':
-                    drop = 1 + round(random.random() * 5)
+                    drop = 1 + round(random.random() * 2)
                     self.result.append(f"You moved {directiondict[i[-1]]} and dropped {drop} coins!")
                     self.score -= drop
                 elif i[0] == 'r':
