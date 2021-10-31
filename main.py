@@ -553,17 +553,6 @@ async def visit(ctx):
         except:
             tries += 1
             await output.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
-    if ind != (len(nonemptyanswers) + 1):
-        while True:
-            try:
-                datingsheet.delete_rows(ind - 2)
-                break
-            except Exception as e:
-                await logs.send(e)
-        err = discord.Embed(title="Error fixed!", description=f"Error on https://discord.com/channels/816083586502361099/825955683996401685/{logmsg.id}")
-        err.add_field(name="Deleted index", value=(ind+1), inline=False)
-        err.set_thumbnail(url=botIcon)
-        await errors.send(embed=err)
 
 
 @bot.command(aliases=["du"])
