@@ -769,7 +769,7 @@ async def minigame(ctx):
             pass
     users = [str(i["ID"]) for i in load]
     if str(ctx.author.id) in users:
-        user = [i for i in load if str(i["URL"]) == str(ctx.author.id)][0]
+        user = [i for i in load if str(i["ID"]) == str(ctx.author.id)][0]
         ind = load.index(user)
         coins = user["Coins"]
         while True:
