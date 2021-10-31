@@ -775,6 +775,7 @@ async def minigame(ctx):
         while True:
             try:
                 minigamesheet.update_cell(ind + 2, 2, coins + b.score)
+                break
             except:
                 pass
     else:
