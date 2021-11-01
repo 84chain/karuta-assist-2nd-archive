@@ -862,9 +862,10 @@ async def finddupes(ctx):
             except:
                 loads += 1
                 await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-        setload = [dict(t) for t in {tuple(d.items()) for d in load}]
-        alldupes = list((Counter(load) - Counter(setload)).elements())
-        dupes = [dict(t) for t in {tuple(d.items()) for d in alldupes}]
+        listload = [list(i.values) for i in load]
+        setload = list(set(listload))
+        alldupes = list((Counter(listload) - Counter(setload)).elements())
+        dupes = list(set(alldupes))
         indexes = []
         for i in dupes:
             indexes += [k + 2 for k in allindex(load, i)]
