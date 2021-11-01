@@ -11,6 +11,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import os
 import sys
 from collections import Counter
+from itertools import groupby
+from operator import itemgetter
 
 token = "Nzc5NTAwNjAyNDg0MTk1MzI4.X7hcgg.y4STLPtvCoHYr7lHI3EmE029nbI"
 bot = commands.Bot(command_prefix=["k", "K"])
@@ -862,13 +864,17 @@ async def finddupes(ctx):
             except:
                 loads += 1
                 await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-        listload = [list(i.values()) for i in load]
+        listload = [tuple(i.values()) for i in load]
         setload = list(set(listload))
         alldupes = list((Counter(listload) - Counter(setload)).elements())
         dupes = list(set(alldupes))
         indexes = []
         for i in dupes:
             indexes += [k + 2 for k in allindex(listload, i)]
+        sortind = sorted(indexes)
+        consdupes = []
+        for k, g in groupby(enumerate(sortind), lambda i : i[0] - i[1]):
+            consdupes += [str(n) for n in map(itemgetter(1), g)]
         await msg.reply(f"Consecutive dupes found: {', '.join(indexes)}")
     else:
         await msg.reply("You do not have access to this command")
