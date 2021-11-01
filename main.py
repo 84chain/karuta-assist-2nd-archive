@@ -862,13 +862,13 @@ async def finddupes(ctx):
             except:
                 loads += 1
                 await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-        listload = [list(i.values) for i in load]
+        listload = [list(i.values()) for i in load]
         setload = list(set(listload))
         alldupes = list((Counter(listload) - Counter(setload)).elements())
         dupes = list(set(alldupes))
         indexes = []
         for i in dupes:
-            indexes += [k + 2 for k in allindex(load, i)]
+            indexes += [k + 2 for k in allindex(listload, i)]
         await msg.reply(f"Consecutive dupes found: {', '.join(indexes)}")
     else:
         await msg.reply("You do not have access to this command")
