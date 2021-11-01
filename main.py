@@ -883,7 +883,7 @@ async def finddupes(ctx):
         for i in range(len(consdupes)):
             try:
                 if consdupes[i] == consdupes[i + 1] - 1:
-                    actualdupes += [consdupes[i], consdupes[i + 1]]
+                    actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
             except:
                 pass
         final = list(set(actualdupes))
