@@ -876,7 +876,7 @@ async def finddupes(ctx):
         for i in range(len(sortind)):
             try:
                 if load[sortind[i]] == load[sortind[i + 1]]:
-                    consdupes += [i, i + 1]
+                    consdupes += [sortind[i], sortind[i + 1]]
             except:
                 pass
         await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in consdupes]) if consdupes != [] else 'None'}")
