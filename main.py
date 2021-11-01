@@ -531,13 +531,13 @@ async def visit(ctx):
     await output.edit(content="Waiting for Google Sheets... please wait")
     while True:
         try:
-            ind = load.index({
+            ind = allindex(load, {
                 "Visitor": int(question.visitor),
                 "URL": question.url,
                 "Question": question.question,
                 "Answer": correctanswer,
                 "Result": questionresult
-            }) + 2
+            })[-1] + 2
             await output.delete()
             log = discord.Embed(title="Dating Answer Submitted",
                                 description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
@@ -887,7 +887,7 @@ async def finddupes(ctx):
                     actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
             except:
                 pass
-        final = list(set(actualdupes))
+        final = sorted(list(set(actualdupes)))
         await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'}")
     else:
         await msg.reply("You do not have access to this command")
