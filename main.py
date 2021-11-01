@@ -879,7 +879,15 @@ async def finddupes(ctx):
                     consdupes += [sortind[i], sortind[i + 1]]
             except:
                 pass
-        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in consdupes]) if consdupes != [] else 'None'}")
+        actualdupes = []
+        for i in range(len(consdupes)):
+            try:
+                if consdupes[i] == consdupes[i + 1] - 1:
+                    actualdupes += [consdupes[i], consdupes[i + 1]]
+            except:
+                pass
+        final = list(set(actualdupes))
+        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'}")
     else:
         await msg.reply("You do not have access to this command")
 
