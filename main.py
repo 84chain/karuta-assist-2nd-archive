@@ -873,8 +873,12 @@ async def finddupes(ctx):
             indexes += [k + 2 for k in allindex(listload, i)]
         sortind = sorted(indexes)
         consdupes = []
-        for k, g in groupby(enumerate(sortind), lambda i : i[0] - i[1]):
-            consdupes += [str(n) for n in map(itemgetter(1), g)]
+        for i in range(len(sortind)):
+            try:
+                if sortind[i] == sortind[i + 1]:
+                    consdupes += [i, i + 1]
+            except:
+                pass
         await msg.reply(f"Consecutive dupes found: {', '.join(consdupes)}")
     else:
         await msg.reply("You do not have access to this command")
