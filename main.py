@@ -847,6 +847,7 @@ async def coins(ctx, *args):
     c = discord.Embed(title="Coins", description=f"Coins owned by <@{user}>")
     c.add_field(name="Total coins", value=coin, inline=False)
     c.set_thumbnail(url=botIcon)
+    await loadmsg.delete()
     await msg.reply(embed=c)
 
 
