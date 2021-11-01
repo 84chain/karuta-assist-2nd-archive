@@ -875,7 +875,7 @@ async def finddupes(ctx):
         consdupes = []
         for k, g in groupby(enumerate(sortind), lambda i : i[0] - i[1]):
             consdupes += [str(n) for n in map(itemgetter(1), g)]
-        await msg.reply(f"Consecutive dupes found: {', '.join(indexes)}")
+        await msg.reply(f"Consecutive dupes found: {', '.join(consdupes)}")
     else:
         await msg.reply("You do not have access to this command")
 
