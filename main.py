@@ -870,12 +870,12 @@ async def finddupes(ctx):
         dupes = list(set(alldupes))
         indexes = []
         for i in dupes:
-            indexes += [k + 2 for k in allindex(listload, i)]
+            indexes += [k for k in allindex(listload, i)]
         sortind = sorted(indexes)
         consdupes = []
         for i in range(len(sortind)):
             try:
-                if sortind[i] == sortind[i + 1]:
+                if load[sortind[i]] == load[sortind[i + 1]]:
                     consdupes += [i, i + 1]
             except:
                 pass
