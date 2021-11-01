@@ -2,16 +2,15 @@
 
 import discord
 from discord.ext import commands
-import math
 import asyncio
 from discord.ext.commands import CommandNotFound
-import time
 import random
 import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 import sys
+from collections import Counter
 
 token = "Nzc5NTAwNjAyNDg0MTk1MzI4.X7hcgg.y4STLPtvCoHYr7lHI3EmE029nbI"
 bot = commands.Bot(command_prefix=["k", "K"])
@@ -864,7 +863,7 @@ async def finddupes(ctx):
                 loads += 1
                 await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
         setload = [dict(t) for t in {tuple(d.items()) for d in load}]
-        alldupes = [item for item in setload if item not in load]
+        alldupes = list((Counter(load) - Counter(setload)).elements())
         dupes = [dict(t) for t in {tuple(d.items()) for d in alldupes}]
         indexes = []
         for i in dupes:
