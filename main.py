@@ -162,6 +162,13 @@ def Round(fl):
     else:
         return round(fl)
 
+# Fuck list.index()
+def allindex(l, item):
+    indexes = []
+    for i, j in enumerate(l):
+        if j == item:
+            indexes.append(i)
+    return indexes
 
 def allowedChannels(guild):
     return [int(i["Channel"]) for i in serversheet if int(i["Guild"]) == guild]
@@ -856,20 +863,13 @@ async def finddupes(ctx):
             except:
                 loads += 1
                 await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-        step = 0
-        length = len(load)
-        double = []
-        waitmsg = await msg.reply(f"Searching entry #{step + 1} of {length}")
-        while step < length:
-            try:
-                if load[step] == load[step + 1]:
-                    double.append(step + 2)
-            except:
-                pass
-            step += 1
-            await waitmsg.edit(content=f"Searching entry #{step + 1} of {length}")
-        await waitmsg.delete()
-        await msg.reply(content=f"Consecutive dupes found: {', '.join([str(i) for i in double])}")
+        setload = list(set(load))
+        alldupes = [item for item in load if item not in setload]
+        dupes = list(set(alldupes))
+        indexes = []
+        for i in dupes:
+            indexes += [k + 2 for k in allindex(load, i)]
+        await msg.reply(f"Consecutive dupes found: {', '.join(indexes)}")
     else:
         await msg.reply("You do not have access to this command")
 
