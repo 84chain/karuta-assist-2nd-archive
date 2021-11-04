@@ -219,7 +219,7 @@ def stripURL(url):
     for i in s:
         if i not in "01234567890":
             out.append(i)
-    return "-".join(out[:-1])
+    return "-".join(out[:-1]).replace("/versioned", "")
 
 
 def getCoins(load, id):
@@ -527,7 +527,6 @@ async def visit(ctx):
         except:
             loads += 1
             await output.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-    nonemptyanswers = [i for i in load if i["URL"] is not None]
     await output.edit(content="Waiting for Google Sheets... please wait")
     while True:
         try:
@@ -888,7 +887,17 @@ async def finddupes(ctx):
             except:
                 pass
         final = sorted(list(set(actualdupes)))
-        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'}")
+        duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
+        marked = [i[0] for i in duos]
+        for i in marked:
+            index = i
+            while True:
+                try:
+                    datingsheet.format(range_name=f"A{index}:E{index}", cell_format={"backgroundColor": {"red": 1.0, "green": 0.0, "blue": 0.0}})
+                    break
+                except:
+                    pass
+        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'}" + "\nDupes have been highlighted in red" if final != [] else "")
     else:
         await msg.reply("You do not have access to this command")
 
