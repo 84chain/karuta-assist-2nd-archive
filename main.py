@@ -899,7 +899,7 @@ async def finddupes(ctx):
                         break
                     except:
                         pass
-        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'}" + "\nDupes have been highlighted in red" if final != [] else "")
+        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'} {' - Dupes have been highlighted in red' if final != [] else ''}")
     else:
         await msg.reply("You do not have access to this command")
 
