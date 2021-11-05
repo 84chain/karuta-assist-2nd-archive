@@ -566,7 +566,23 @@ async def visit(ctx):
 async def dateupdate(ctx, index, *args):
     msg = ctx.message
     answer = " ".join(args)
-    if ctx.author.id == 166271462175408130:
+    loadmsg = await ctx.send("Loading the Sheet... please wait")
+    loads = 0
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
+            break
+        except:
+            loads += 1
+            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
+    await loadmsg.delete()
+    if str(load[int(index) - 2]["Visitor"]) == str(ctx.author.id):
+        rightUser = True
+    else:
+        within2 = [str(i["Visitor"]) for i in load[int(index) : int(index) - 2]]
+        rightUser = str(ctx.author.id) in within2
+    if ctx.author.id == 166271462175408130 or rightUser:
         while True:
             try:
                 datingsheet.update_cell(index, 4, answer)
@@ -575,7 +591,8 @@ async def dateupdate(ctx, index, *args):
             except:
                 pass
     else:
-        await msg.reply("You do not have access to this command.")
+        await msg.reply("You do not have access to this command")
+
 
 
 @bot.command(aliases=["dlb"])
