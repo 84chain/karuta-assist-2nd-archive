@@ -374,7 +374,6 @@ class Board:
 @bot.command(aliases=["vi", "VI"])
 async def visit(ctx):
     logs = bot.get_channel(825955683996401685)
-    errors = bot.get_channel(902049222025682994)
     msg = ctx.message
     while True:
         try:
@@ -564,6 +563,7 @@ async def visit(ctx):
 
 @bot.command(aliases=["du"])
 async def dateupdate(ctx, index, *args):
+    logs = bot.get_channel(825955683996401685)
     msg = ctx.message
     answer = " ".join(args)
     loadmsg = await ctx.send("Loading the Sheet... please wait")
@@ -590,6 +590,12 @@ async def dateupdate(ctx, index, *args):
                 break
             except:
                 pass
+        log = discord.Embed(title="Answer Update", description="Due to a misclick or other errors, this answer was changed")
+        log.add_field(name="Index", value=index, inline=False)
+        log.add_field(name="Editor", value=f"<@{ctx.author.id}>", inline=False)
+        log.add_field(name="Answer", value=answer, inline=False)
+        log.set_thumbnail(url=botIcon)
+        await logs.send(embed=log)
     else:
         await msg.reply("You do not have access to this command")
 
