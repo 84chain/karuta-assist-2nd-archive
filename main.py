@@ -563,7 +563,7 @@ async def visit(ctx):
 
 @bot.command(aliases=["du"])
 async def dateupdate(ctx, index, *args):
-    logs = bot.get_channel(825955683996401685)
+    error = bot.get_channel(902049222025682994)
     msg = ctx.message
     answer = " ".join(args)
     loadmsg = await ctx.send("Loading the Sheet... please wait")
@@ -595,7 +595,7 @@ async def dateupdate(ctx, index, *args):
         log.add_field(name="Editor", value=f"<@{ctx.author.id}>", inline=False)
         log.add_field(name="Answer", value=answer, inline=False)
         log.set_thumbnail(url=botIcon)
-        await logs.send(embed=log)
+        await error.send(embed=log)
     else:
         await msg.reply("You do not have access to this command")
 
