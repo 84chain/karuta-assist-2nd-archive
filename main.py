@@ -913,16 +913,18 @@ async def finddupes(ctx):
         if final != []:
             duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
             marked = [i[0] for i in duos]
-            for i in marked:
-                index = i
+            markedshift = [i - marked.index(i) for i in marked]
+            for i in markedshift:
                 while True:
                     try:
-                        datingsheet.format(range_name=f"A{index}:E{index}",
-                                           cell_format={"backgroundColor": {"red": 1.0, "green": 0.0, "blue": 0.0}})
+                        datingsheet.delete_rows(i)
                         break
                     except:
                         pass
-        await msg.reply(f"Consecutive dupes found: {', '.join([str(i) for i in final]) if final != [] else 'None'} {' - Dupes have been highlighted in red' if final != [] else ''}")
+        if final != []:
+            await msg.reply(f"Deleted rows: {', '.join([str(i) for i in marked]) if final != [] else 'None'}")
+        else:
+            await msg.reply(f"Consecutive dupes found: None")
     else:
         await msg.reply("You do not have access to this command")
 
