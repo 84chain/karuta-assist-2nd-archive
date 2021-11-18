@@ -921,6 +921,7 @@ async def finddupes(ctx):
                         break
                     except:
                         pass
+        await loadmsg.delete()
         if final != []:
             await msg.reply(f"Deleted rows: {', '.join([str(i) for i in marked]) if final != [] else 'None'}")
         else:
