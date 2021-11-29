@@ -526,7 +526,48 @@ async def visit(ctx):
         except:
             loads += 1
             await output.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-    await output.edit(content="Waiting for Google Sheets... please wait")
+    await output.edit(content="Cleaning the Sheet... please wait")
+    while True:
+        try:
+            load2 = datingsheet.get_all_records()
+            break
+        except:
+            pass
+    listload = [tuple(i.values()) for i in load2]
+    setload = list(set(listload))
+    alldupes = list((Counter(listload) - Counter(setload)).elements())
+    dupes = list(set(alldupes))
+    indexes = []
+    for i in dupes:
+        indexes += [k for k in allindex(listload, i)]
+    sortind = sorted(indexes)
+    consdupes = []
+    for i in range(len(sortind)):
+        try:
+            if load2[sortind[i]] == load2[sortind[i + 1]]:
+                consdupes += [sortind[i], sortind[i + 1]]
+        except:
+            pass
+    actualdupes = []
+    for i in range(len(consdupes)):
+        try:
+            if consdupes[i] == consdupes[i + 1] - 1:
+                actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
+        except:
+            pass
+    final = sorted(list(set(actualdupes)))
+    if final != []:
+        duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
+        marked = [i[0] for i in duos]
+        markedshift = [i - marked.index(i) for i in marked]
+        for i in markedshift:
+            while True:
+                try:
+                    datingsheet.delete_rows(i)
+                    break
+                except:
+                    pass
+    await output.edit(content="Sheet cleaned!\nWaiting for Google Sheets... please wait")
     while True:
         try:
             ind = allindex(load, {
