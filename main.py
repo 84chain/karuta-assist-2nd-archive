@@ -527,13 +527,7 @@ async def visit(ctx):
             loads += 1
             await output.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
     await output.edit(content="Cleaning the Sheet... please wait")
-    while True:
-        try:
-            load2 = datingsheet.get_all_records()
-            break
-        except:
-            pass
-    listload = [tuple(i.values()) for i in load2]
+    listload = [tuple(i.values()) for i in load]
     setload = list(set(listload))
     alldupes = list((Counter(listload) - Counter(setload)).elements())
     dupes = list(set(alldupes))
@@ -544,7 +538,7 @@ async def visit(ctx):
     consdupes = []
     for i in range(len(sortind)):
         try:
-            if load2[sortind[i]] == load2[sortind[i + 1]]:
+            if load[sortind[i]] == load[sortind[i + 1]]:
                 consdupes += [sortind[i], sortind[i + 1]]
         except:
             pass
