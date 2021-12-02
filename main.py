@@ -526,42 +526,7 @@ async def visit(ctx):
         except:
             loads += 1
             await output.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-    await output.edit(content="Cleaning the Sheet... please wait")
-    listload = [tuple(i.values()) for i in load]
-    setload = list(set(listload))
-    alldupes = list((Counter(listload) - Counter(setload)).elements())
-    dupes = list(set(alldupes))
-    indexes = []
-    for i in dupes:
-        indexes += [k for k in allindex(listload, i)]
-    sortind = sorted(indexes)
-    consdupes = []
-    for i in range(len(sortind)):
-        try:
-            if load[sortind[i]] == load[sortind[i + 1]]:
-                consdupes += [sortind[i], sortind[i + 1]]
-        except:
-            pass
-    actualdupes = []
-    for i in range(len(consdupes)):
-        try:
-            if consdupes[i] == consdupes[i + 1] - 1:
-                actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
-        except:
-            pass
-    final = sorted(list(set(actualdupes)))
-    if final != []:
-        duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
-        marked = [i[0] for i in duos]
-        markedshift = [i - marked.index(i) for i in marked]
-        for i in markedshift:
-            while True:
-                try:
-                    datingsheet.delete_rows(i)
-                    break
-                except:
-                    pass
-    await output.edit(content="Sheet cleaned!\nWaiting for Google Sheets... please wait")
+    await output.edit(content="Waiting for Google Sheets... please wait")
     while True:
         try:
             ind = allindex(load, {
@@ -571,29 +536,65 @@ async def visit(ctx):
                 "Answer": correctanswer,
                 "Result": questionresult
             })[-1] + 2
-            await output.delete()
-            log = discord.Embed(title="Dating Answer Submitted",
-                                description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
-            log.set_thumbnail(url=botIcon)
-            log.add_field(name="Index", value=ind, inline=False)
-            log.add_field(name="Visitor",
-                          value=question.visitor,
-                          inline=False)
-            log.add_field(name="URL",
-                          value=stripURL(question.url),
-                          inline=False)
-            log.add_field(name="Question",
-                          value=question.question, inline=False)
-            log.add_field(name="Answer", value=correctanswer, inline=False)
-            log.add_field(name="Result", value=questionresult, inline=False)
-            await logs.send(embed=log)
-            await msg.reply(
-                f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
-            await resp.delete()
             break
         except:
             tries += 1
             await output.edit(content=f"Waiting for Google Sheets... please wait\nTries: {tries}")
+    log = discord.Embed(title="Dating Answer Submitted",
+                        description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
+    log.set_thumbnail(url=botIcon)
+    log.add_field(name="Index", value=ind, inline=False)
+    log.add_field(name="Visitor",
+                  value=question.visitor,
+                  inline=False)
+    log.add_field(name="URL",
+                  value=stripURL(question.url),
+                  inline=False)
+    log.add_field(name="Question",
+                  value=question.question, inline=False)
+    log.add_field(name="Answer", value=correctanswer, inline=False)
+    log.add_field(name="Result", value=questionresult, inline=False)
+    await logs.send(embed=log)
+    if ind % 10 == 0:
+        await output.edit(content="Cleaning the Sheet... please wait")
+        listload = [tuple(i.values()) for i in load]
+        setload = list(set(listload))
+        alldupes = list((Counter(listload) - Counter(setload)).elements())
+        dupes = list(set(alldupes))
+        indexes = []
+        for i in dupes:
+            indexes += [k for k in allindex(listload, i)]
+        sortind = sorted(indexes)
+        consdupes = []
+        for i in range(len(sortind)):
+            try:
+                if load[sortind[i]] == load[sortind[i + 1]]:
+                    consdupes += [sortind[i], sortind[i + 1]]
+            except:
+                pass
+        actualdupes = []
+        for i in range(len(consdupes)):
+            try:
+                if consdupes[i] == consdupes[i + 1] - 1:
+                    actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
+            except:
+                pass
+        final = sorted(list(set(actualdupes)))
+        if final != []:
+            duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
+            marked = [i[0] for i in duos]
+            markedshift = [i - marked.index(i) for i in marked]
+            for i in markedshift:
+                while True:
+                    try:
+                        datingsheet.delete_rows(i)
+                        break
+                    except:
+                        pass
+    await output.delete()
+    await msg.reply(
+        f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
+    await resp.delete()
 
 
 @bot.command(aliases=["du"])
