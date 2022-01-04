@@ -46,7 +46,8 @@ squaredict = {"0": "0️⃣", # nothing
 restrictedguilds = []
 serversheet = []
 datingsheet = gspread.Worksheet
-minigamesheet = gspread.Worksheet
+datinganswers = []
+characters = []
 
 ## INIT
 @bot.event
@@ -54,7 +55,8 @@ async def on_ready():
     global serversheet
     global datingsheet
     global restrictedguilds
-    global minigamesheet
+    global datinganswers
+    global characters
 
     updates = bot.get_channel(816514583161602069)
 
@@ -68,13 +70,16 @@ async def on_ready():
 
         servers = sheet.get_worksheet(1)
         datingsheet = sheet.get_worksheet(2)
-        minigamesheet = sheet.get_worksheet(5)
 
     except:
         await updates.send("Error connecting to Google Sheets, retrying...")
 
     serversheet = servers.get_all_records()
+    datinganswers = datinganswers.get_all_records()
     restrictedguilds = [int(i["Guild"]) for i in serversheet]
+
+    for url in list(set([i["URL"] for i in datinganswers])):
+        characters.append(Character(url, [k for k in datinganswers if k["URL"] == url]))
 
     e = discord.Embed(title=f"2nd instance status as of {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                       description="Active and inactive commands")
@@ -186,33 +191,6 @@ def mode(arr):
         return "\n".join([str(i) for i in modes])
 
 
-def rankUsers(load):
-    net_correct = []
-    for i in load:
-        if str(i["Visitor"]) not in [k[0] for k in net_correct]:
-            net_correct.append([str(i["Visitor"]), i["Result"], (1 if i["Result"] == 0 else 0)])
-        else:
-            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][1] += i[
-                "Result"]
-            net_correct[net_correct.index([m for m in net_correct if m[0] == str(i["Visitor"])][0])][-1] += (
-                1 if i["Result"] == 0 else 0)
-    ratios = []
-    for i in net_correct:
-        ratios.append({
-            "Visitor": i[0],
-            "Ratio": i[1] * (1 - len([j for j in load if str(j["Visitor"]) == str(i[0])]) / len(load))
-        })
-    return ratios
-
-
-def subtract(x, y):
-    return [i for i in x if not i in y or y.remove(i)]
-
-
-def toString(d):
-    return f"{d['Visitor']}; {stripURL(d['URL'])}; {d['Question']}; {d['Answer']}"
-
-
 def stripURL(url):
     s = str(url).split("-")
     out = []
@@ -229,7 +207,6 @@ def getCoins(load, id):
 class Question:
     def __init__(self, kvi_d, url):
         splitd = kvi_d.replace("`", "").split("\n")
-        self.visitor = splitd[0].split(" ")[-1][2:-1]
         self.character = " ".join(splitd[1].split(" ")[2:-1]).replace("*", "")
         self.code = splitd[1].split(" ")[-1].replace("(", "").replace(")", "")
         self.question = splitd[6].replace("*", "")[1:-1]
@@ -246,13 +223,17 @@ class Question:
             self.answer4 = ""
 
     def toDict(self):
-        return {"visitor": self.visitor,
-                "character": self.character,
+        return {"character": self.character,
                 "question": self.question,
                 "answer 1": self.answer1,
                 "answer 2": self.answer2,
                 "answer 3": self.answer3,
                 "answer 4": self.answer4}
+
+class Character:
+    def __init__(self, url, questions):
+        self.url = url
+        self.questions = questions
 
 # COMMANDS
 
@@ -415,9 +396,6 @@ async def visit(ctx):
                         description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
     log.set_thumbnail(url=botIcon)
     log.add_field(name="Index", value=ind, inline=False)
-    log.add_field(name="Visitor",
-                  value=question.visitor,
-                  inline=False)
     log.add_field(name="URL",
                   value=stripURL(question.url),
                   inline=False)
@@ -473,38 +451,19 @@ async def dateupdate(ctx, index, *args):
     error = bot.get_channel(902049222025682994)
     msg = ctx.message
     answer = " ".join(args)
-    loadmsg = await ctx.send("Loading the Sheet... please wait")
-    loads = 0
     while True:
         try:
-            load = datingsheet.get_all_records()
-            await loadmsg.edit(content="Waiting for Google Sheets... please wait")
+            datingsheet.update_cell(index, 4, answer)
+            await msg.reply(f"Answer on row {index} changed to `{answer}`")
             break
         except:
-            loads += 1
-            await loadmsg.edit(content=f"Loading the Sheet... please wait\nTries: {loads}")
-    await loadmsg.delete()
-    if str(load[int(index) - 2]["Visitor"]) == str(ctx.author.id):
-        rightUser = True
-    else:
-        within2 = [str(i["Visitor"]) for i in load[int(index) : int(index) - 2]]
-        rightUser = str(ctx.author.id) in within2
-    if ctx.author.id == 166271462175408130 or rightUser:
-        while True:
-            try:
-                datingsheet.update_cell(index, 4, answer)
-                await msg.reply(f"Answer on row {index} changed to `{answer}`")
-                break
-            except:
-                pass
-        log = discord.Embed(title="Answer Update", description="Due to a misclick or other errors, this answer was changed")
-        log.add_field(name="Index", value=index, inline=False)
-        log.add_field(name="Editor", value=f"<@{ctx.author.id}>", inline=False)
-        log.add_field(name="Answer", value=answer, inline=False)
-        log.set_thumbnail(url=botIcon)
-        await error.send(embed=log)
-    else:
-        await msg.reply("You do not have access to this command")
+            pass
+    log = discord.Embed(title="Answer Update", description="Due to a misclick or other errors, this answer was changed")
+    log.add_field(name="Index", value=index, inline=False)
+    log.add_field(name="Editor", value=f"<@{ctx.author.id}>", inline=False)
+    log.add_field(name="Answer", value=answer, inline=False)
+    log.set_thumbnail(url=botIcon)
+    await error.send(embed=log)
 
 
 
