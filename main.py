@@ -72,6 +72,14 @@ async def on_ready():
     datinganswers = datingsheet.get_all_records()
     restrictedguilds = [int(i["Guild"]) for i in serversheet]
 
+    if serversheet == [] or datinganswers == [] or restrictedguilds == []:
+        try:
+            serversheet = servers.get_all_records()
+            datinganswers = datingsheet.get_all_records()
+            restrictedguilds = [int(i["Guild"]) for i in serversheet]
+        except:
+            await updates.send("Error initializing data")
+
     for url in list(set([i["URL"] for i in datinganswers])):
         characters.append(Character(url, [removeURL(k) for k in datinganswers if k["URL"] == url]))
 
