@@ -1,18 +1,13 @@
-# THIS IS A SECONDARY INSTANCE FOR KARUTA ASSIST AND ONLY DOES EVENT PINGS/DATING QUESTIONS/POSSIBLY FRAMES
-
 import discord
 from discord.ext import commands
 import asyncio
 from discord.ext.commands import CommandNotFound
-import random
 import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 import sys
 from collections import Counter
-from itertools import groupby
-from operator import itemgetter
 
 token = "Nzc5NTAwNjAyNDg0MTk1MzI4.X7hcgg.y4STLPtvCoHYr7lHI3EmE029nbI"
 bot = commands.Bot(command_prefix=["k", "K"])
@@ -73,13 +68,12 @@ async def on_ready():
 
     except:
         await updates.send("Error connecting to Google Sheets, retrying...")
-
     serversheet = servers.get_all_records()
-    datinganswers = datinganswers.get_all_records()
+    datinganswers = datingsheet.get_all_records()
     restrictedguilds = [int(i["Guild"]) for i in serversheet]
 
     for url in list(set([i["URL"] for i in datinganswers])):
-        characters.append(Character(url, [k for k in datinganswers if k["URL"] == url]))
+        characters.append(Character(url, [removeURL(k) for k in datinganswers if k["URL"] == url]))
 
     e = discord.Embed(title=f"2nd instance status as of {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                       description="Active and inactive commands")
@@ -200,8 +194,10 @@ def stripURL(url):
     return "-".join(out[:-1]).replace("/versioned", "")
 
 
-def getCoins(load, id):
-    return sum([int(i["Coins"]) for i in load if str(id) == str(i["ID"])])
+def removeURL(question):
+    return {"Question": question["Question"],
+            "Answer": question["Answer"],
+            "Result": question["Result"]}
 
 # CLASSES
 class Question:
@@ -267,8 +263,11 @@ async def visit(ctx):
                 break
         except asyncio.TimeoutError:
             return
-    results = [i for i in datingsheet.get_all_records() if
-               ((i["URL"][:-6] == url[:-6]) and i["Question"] == question.question)]
+    if [i for i in characters if i.url[:-6] == url[:-6]][0]:
+        c = [i for i in characters if i.url[:-6] == url[:-6]][0]
+        results = [i for i in c.questions if question.question == i["Question"]]
+    else:
+        results = []
     if results:
         goodresults = [i["Answer"] for i in results if i["Result"] == 1]
         neutralresults = [i["Answer"] for i in results if i["Result"] == 0]
@@ -379,19 +378,18 @@ async def visit(ctx):
     while True:
         try:
             datingsheet.append_row(
-                [question.visitor, question.url, question.question, correctanswer, questionresult])
+                [question.url, question.question, correctanswer, questionresult])
             break
         except:
             pass
     await output.edit(content="Loading the Sheet... please wait")
     while True:
         try:
-            load = datingsheet.get_all_records()
+            ind = datingsheet.row_count
             break
         except:
             pass
     await output.edit(content="Waiting for Google Sheets... please wait")
-    ind = len(load) + 1
     log = discord.Embed(title="Dating Answer Submitted",
                         description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
     log.set_thumbnail(url=botIcon)
@@ -406,6 +404,12 @@ async def visit(ctx):
     await logs.send(embed=log)
     if ind % 10 == 0:
         await output.edit(content="Cleaning the Sheet... please wait")
+        while True:
+            try:
+                load = datingsheet.get_all_records()
+                break
+            except:
+                pass
         listload = [tuple(i.values()) for i in load]
         setload = list(set(listload))
         alldupes = list((Counter(listload) - Counter(setload)).elements())
