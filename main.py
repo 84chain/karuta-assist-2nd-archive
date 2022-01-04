@@ -382,18 +382,16 @@ async def visit(ctx):
             break
         except:
             pass
-    await output.edit(content="Loading the Sheet... please wait")
     while True:
         try:
             ind = datingsheet.row_count
             break
         except:
             pass
-    await output.edit(content="Waiting for Google Sheets... please wait")
     log = discord.Embed(title="Dating Answer Submitted",
                         description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
     log.set_thumbnail(url=botIcon)
-    log.add_field(name="Index", value=ind, inline=False)
+    log.add_field(name="Index", value=ind + 1, inline=False)
     log.add_field(name="URL",
                   value=stripURL(question.url),
                   inline=False)
@@ -402,7 +400,7 @@ async def visit(ctx):
     log.add_field(name="Answer", value=correctanswer, inline=False)
     log.add_field(name="Result", value=questionresult, inline=False)
     await logs.send(embed=log)
-    if ind % 10 == 0:
+    if ind % 50 == 0:
         await output.edit(content="Cleaning the Sheet... please wait")
         while True:
             try:
@@ -446,7 +444,7 @@ async def visit(ctx):
                         pass
     await output.delete()
     await msg.reply(
-        f"Data sent! Thank you! Your response number is {ind}. For error reporting please have this number ready.")
+        f"Data sent! Thank you! Your response number is {ind + 1}. For error reporting please have this number ready.")
     await resp.delete()
 
 
