@@ -44,6 +44,7 @@ datinganswers = []
 characters = []
 curr_ind = 0
 
+
 ## INIT
 @bot.event
 async def on_ready():
@@ -367,105 +368,107 @@ async def visit(ctx):
         await msg.reply(embed=answer)
         await kvi.add_reaction("✅")
     else:
-        emb = discord.Embed(title="No records found", description="Do your best to answer the question, and check ✅ when finished")
-        emb.add_field(name="Answers from other characters", value="Click the reaction below to get more data on this question, but for all characters instead", inline=False)
+        emb = discord.Embed(title="No records found",
+                            description="Do your best to answer the question, and check ✅ when finished")
+        emb.add_field(name="Answers from other characters",
+                      value="Click the reaction below to get more data on this question, but for all characters instead",
+                      inline=False)
         emb.set_footer(text="Note that this data may not be accurate")
         norecords = await ctx.send(embed=emb)
         await norecords.add_reaction("📈")
         await kvi.add_reaction("✅")
-        while True:
-            try:
-                def check(reaction, user):
-                    return user == ctx.author and str(reaction.emoji) == "📈"
-                await bot.wait_for("reaction_add", check=check, timeout=15)
-                gquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == 1]
-                nquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == 0]
-                bquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == -1]
-                if gquery:
-                    qanswer = discord.Embed(title="Collected Data on this Question:",
-                                       description="Most likely answer to be correct",
-                                       colour=0x00ff00)
-                    qanswer.add_field(name="Correct answers",
-                                 value=f"**Most likely answer** (`mode`)\n - {mode(gquery) if mode(gquery) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(list(set(gquery)))}",
-                                 inline=False)
-                else:
-                    qanswer = discord.Embed(title="Collected Data on this Question:",
-                                       description="Most likely answer to be correct",
-                                       colour=0xf8e71c)
-                    qanswer.add_field(name="Correct answers",
-                                 value="So far there are no correct answers collected",
-                                 inline=False)
-                    if nquery:
-                        qanswer.add_field(name="Neutral answers",
-                                     value=f"**Most likely answer** (`mode`)\n - {mode(nquery) if mode(nquery) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(list(set(nquery)))}",
-                                     inline=False)
-                    else:
-                        qanswer = discord.Embed(title="Collected Data on this Question:",
-                                           description="Most likely answer to be correct",
-                                           colour=0xff0000)
-                        qanswer.add_field(name="Neutral answers",
-                                     value="So far there are no neutral answers collected",
-                                     inline=False)
-                        qanswer.add_field(name="Wrong answers",
-                                     value=f"**List of all wrong answers**\n - {', '.join(list(set(bquery)))}",
-                                     inline=False)
-                qanswer.set_thumbnail(url=question.url)
-                qanswer.set_footer(
-                text="The data shown above may be inaccurate since it does not belong to the current character")
-                await norecords.edit(embed=qanswer)
-                break
-            except asyncio.TimeoutError:
-                break
-            except:
-                pass
     while True:
         try:
             def check(reaction, user):
-                return user == ctx.author and str(reaction.emoji) == "✅"
-
-            await bot.wait_for("reaction_add", check=check, timeout=60)
-            kvi_e = kvi.embeds[0]
-            color = str(kvi_e.color)
-            if color == "#ff0000":
-                embedcolor = 0xff0000
-                questionresult = -1
-            elif color == "#f8e71c":
-                embedcolor = 0xf8e71c
-                questionresult = 0
-            elif color == "#00ff00":
-                embedcolor = 0x00ff00
-                questionresult = 1
-            if question.answer4 != "":
-                numquestions = 4
-            elif question.answer3 != "":
-                numquestions = 3
-            else:
-                numquestions = 2
-            if not results:
-                await norecords.delete()
-            response = discord.Embed(
-                title=f"You answered this question {['with a neutral result.', 'correctly!', 'incorrectly.'][questionresult]}",
-                description="Which answer did you put?",
-                colour=embedcolor)
-            response.add_field(name="Answer 1", value=question.answer1, inline=False)
-            response.add_field(name="Answer 2", value=question.answer2, inline=False)
-            if numquestions >= 3:
-                response.add_field(name="Answer 3", value=question.answer3, inline=False)
-            if numquestions == 4:
-                response.add_field(name="Answer 4", value=question.answer4, inline=False)
-            response.set_thumbnail(url=question.url)
-            resp = await msg.reply(embed=response)
-
-            await resp.add_reaction("1️⃣")
-            await resp.add_reaction("2️⃣")
-            if numquestions >= 3:
-                await resp.add_reaction("3️⃣")
-            if numquestions == 4:
-                await resp.add_reaction("4️⃣")
+                 return user == ctx.author and reaction.emoji in ["📈", "✅"]
+            react = await bot.wait_for("reaction_add", check=check, timeout=15)
             break
         except:
-            await ctx.send("Timed out")
-            return
+            pass
+    if react[0].emoji == "📈":
+        gquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == 1]
+        nquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == 0]
+        bquery = [i["Answer"] for i in datinganswers if
+                  i["Question"] == question.question and i["Result"] == -1]
+        if gquery:
+            qanswer = discord.Embed(title="Collected Data on this Question:",
+                                    description="Most likely answer to be correct",
+                                    colour=0x00ff00)
+            qanswer.add_field(name="Correct answers",
+                              value=f"**Most likely answer** (`mode`)\n - {mode(gquery) if mode(gquery) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(list(set(gquery)))}",
+                              inline=False)
+        else:
+            qanswer = discord.Embed(title="Collected Data on this Question:",
+                                    description="Most likely answer to be correct",
+                                    colour=0xf8e71c)
+            qanswer.add_field(name="Correct answers",
+                              value="So far there are no correct answers collected",
+                              inline=False)
+            if nquery:
+                qanswer.add_field(name="Neutral answers",
+                                  value=f"**Most likely answer** (`mode`)\n - {mode(nquery) if mode(nquery) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(list(set(nquery)))}",
+                                  inline=False)
+            else:
+                qanswer = discord.Embed(title="Collected Data on this Question:",
+                                        description="Most likely answer to be correct",
+                                        colour=0xff0000)
+                qanswer.add_field(name="Neutral answers",
+                                  value="So far there are no neutral answers collected",
+                                  inline=False)
+                qanswer.add_field(name="Wrong answers",
+                                  value=f"**List of all wrong answers**\n - {', '.join(list(set(bquery)))}",
+                                  inline=False)
+        qanswer.set_thumbnail(url=question.url)
+        qanswer.set_footer(
+            text="The data shown above may be inaccurate since it does not belong to the current character")
+        await norecords.edit(embed=qanswer)
+        while True:
+            try:
+                def check(reaction, user):
+                    return user == ctx.author and str(reaction.emoji) == "✅"
+                react2 = await bot.wait_for("reaction_add", check=check, timeout=15)
+                break
+            except:
+                pass
+    if react[0].emoji == "✅" or react2[0].emoji == "✅":
+        kvi_e = kvi.embeds[0]
+        color = str(kvi_e.color)
+        if color == "#ff0000":
+            embedcolor = 0xff0000
+            questionresult = -1
+        elif color == "#f8e71c":
+            embedcolor = 0xf8e71c
+            questionresult = 0
+        elif color == "#00ff00":
+            embedcolor = 0x00ff00
+            questionresult = 1
+        if question.answer4 != "":
+            numquestions = 4
+        elif question.answer3 != "":
+            numquestions = 3
+        else:
+            numquestions = 2
+        if not results:
+            await norecords.delete()
+        response = discord.Embed(
+            title=f"You answered this question {['with a neutral result.', 'correctly!', 'incorrectly.'][questionresult]}",
+            description="Which answer did you put?",
+            colour=embedcolor)
+        response.add_field(name="Answer 1", value=question.answer1, inline=False)
+        response.add_field(name="Answer 2", value=question.answer2, inline=False)
+        if numquestions >= 3:
+            response.add_field(name="Answer 3", value=question.answer3, inline=False)
+        if numquestions == 4:
+            response.add_field(name="Answer 4", value=question.answer4, inline=False)
+        response.set_thumbnail(url=question.url)
+        resp = await msg.reply(embed=response)
+
+        await resp.add_reaction("1️⃣")
+        await resp.add_reaction("2️⃣")
+        if numquestions >= 3:
+            await resp.add_reaction("3️⃣")
+        if numquestions == 4:
+            await resp.add_reaction("4️⃣")
     while True:
         try:
             def check(reaction, user):
