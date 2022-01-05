@@ -411,7 +411,7 @@ async def visit(ctx):
                                      inline=False)
                 qanswer.set_thumbnail(url=question.url)
                 qanswer.set_footer(
-                text="Note that all answers contain a random element - answering correctly may not earn you AP")
+                text="The data shown above may be inaccurate since it does not belong to the current character")
                 await norecords.edit(embed=qanswer)
                 break
             except asyncio.TimeoutError:
