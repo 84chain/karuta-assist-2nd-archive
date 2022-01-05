@@ -27,22 +27,22 @@ directiondict = {"u": "up",
                  "d": "down",
                  "r": "right",
                  "l": "left"}
-squaredict = {"0": "0️⃣", # nothing
-              "b": "🪙", # bonus
-              "d": "⬇", # drop
-              "r": "🔪", # robber
-              "2": "📈", # doubler
-              "w": "🔁", # warp
-              "t": "💀", # trap
-              "j": "💰" # jeff
+squaredict = {"0": "0️⃣",  # nothing
+              "b": "🪙",  # bonus
+              "d": "⬇",  # drop
+              "r": "🔪",  # robber
+              "2": "📈",  # doubler
+              "w": "🔁",  # warp
+              "t": "💀",  # trap
+              "j": "💰"  # jeff
               }
-
 
 restrictedguilds = []
 serversheet = []
 datingsheet = gspread.Worksheet
 datinganswers = []
 characters = []
+curr_ind = 0
 
 ## INIT
 @bot.event
@@ -52,6 +52,7 @@ async def on_ready():
     global restrictedguilds
     global datinganswers
     global characters
+    global curr_ind
 
     updates = bot.get_channel(816514583161602069)
 
@@ -80,8 +81,49 @@ async def on_ready():
         except:
             await updates.send("Error initializing data")
 
-    for url in list(set([i["URL"] for i in datinganswers])):
-        characters.append(Character(url, [removeURL(k) for k in datinganswers if k["URL"] == url]))
+    updateChars()
+    curr_ind = len(datinganswers)
+
+    while True:
+        try:
+            load = datingsheet.get_all_records()
+            break
+        except:
+            pass
+    listload = [tuple(i.values()) for i in load]
+    setload = list(set(listload))
+    alldupes = list((Counter(listload) - Counter(setload)).elements())
+    dupes = list(set(alldupes))
+    indexes = []
+    for i in dupes:
+        indexes += [k for k in allindex(listload, i)]
+    sortind = sorted(indexes)
+    consdupes = []
+    for i in range(len(sortind)):
+        try:
+            if load[sortind[i]] == load[sortind[i + 1]]:
+                consdupes += [sortind[i], sortind[i + 1]]
+        except:
+            pass
+    actualdupes = []
+    for i in range(len(consdupes)):
+        try:
+            if consdupes[i] == consdupes[i + 1] - 1:
+                actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
+        except:
+            pass
+    final = sorted(list(set(actualdupes)))
+    if final != []:
+        duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
+        marked = [i[0] for i in duos]
+        markedshift = [i - marked.index(i) for i in marked]
+        for i in markedshift:
+            while True:
+                try:
+                    datingsheet.delete_rows(i)
+                    break
+                except:
+                    pass
 
     e = discord.Embed(title=f"2nd instance status as of {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                       description="Active and inactive commands")
@@ -170,6 +212,7 @@ def Round(fl):
     else:
         return round(fl)
 
+
 # Fuck list.index()
 def allindex(l, item):
     indexes = []
@@ -177,6 +220,7 @@ def allindex(l, item):
         if j == item:
             indexes.append(i)
     return indexes
+
 
 def allowedChannels(guild):
     return [int(i["Channel"]) for i in serversheet if int(i["Guild"]) == guild]
@@ -207,6 +251,12 @@ def removeURL(question):
             "Answer": question["Answer"],
             "Result": question["Result"]}
 
+
+def updateChars():
+    for url in list(set([i["URL"] for i in datinganswers])):
+        characters.append(Character(url, [removeURL(k) for k in datinganswers if k["URL"] == url]))
+
+
 # CLASSES
 class Question:
     def __init__(self, kvi_d, url):
@@ -234,16 +284,19 @@ class Question:
                 "answer 3": self.answer3,
                 "answer 4": self.answer4}
 
+
 class Character:
     def __init__(self, url, questions):
         self.url = url
         self.questions = questions
+
 
 # COMMANDS
 
 # DATING QUESTIONS
 @bot.command(aliases=["vi", "VI"])
 async def visit(ctx):
+    global curr_ind
     logs = bot.get_channel(825955683996401685)
     msg = ctx.message
     while True:
@@ -390,16 +443,11 @@ async def visit(ctx):
             break
         except:
             pass
-    while True:
-        try:
-            ind = datingsheet.row_count
-            break
-        except:
-            pass
+    curr_ind += 1
     log = discord.Embed(title="Dating Answer Submitted",
                         description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
     log.set_thumbnail(url=botIcon)
-    log.add_field(name="Index", value=ind + 1, inline=False)
+    log.add_field(name="Index", value=curr_ind, inline=False)
     log.add_field(name="URL",
                   value=stripURL(question.url),
                   inline=False)
@@ -408,51 +456,9 @@ async def visit(ctx):
     log.add_field(name="Answer", value=correctanswer, inline=False)
     log.add_field(name="Result", value=questionresult, inline=False)
     await logs.send(embed=log)
-    if ind % 50 == 0:
-        await output.edit(content="Cleaning the Sheet... please wait")
-        while True:
-            try:
-                load = datingsheet.get_all_records()
-                break
-            except:
-                pass
-        listload = [tuple(i.values()) for i in load]
-        setload = list(set(listload))
-        alldupes = list((Counter(listload) - Counter(setload)).elements())
-        dupes = list(set(alldupes))
-        indexes = []
-        for i in dupes:
-            indexes += [k for k in allindex(listload, i)]
-        sortind = sorted(indexes)
-        consdupes = []
-        for i in range(len(sortind)):
-            try:
-                if load[sortind[i]] == load[sortind[i + 1]]:
-                    consdupes += [sortind[i], sortind[i + 1]]
-            except:
-                pass
-        actualdupes = []
-        for i in range(len(consdupes)):
-            try:
-                if consdupes[i] == consdupes[i + 1] - 1:
-                    actualdupes += [consdupes[i] + 2, consdupes[i + 1] + 2]
-            except:
-                pass
-        final = sorted(list(set(actualdupes)))
-        if final != []:
-            duos = [final[i * 2:(i + 1) * 2] for i in range((len(final) + 2 - 1) // 2)]
-            marked = [i[0] for i in duos]
-            markedshift = [i - marked.index(i) for i in marked]
-            for i in markedshift:
-                while True:
-                    try:
-                        datingsheet.delete_rows(i)
-                        break
-                    except:
-                        pass
     await output.delete()
     await msg.reply(
-        f"Data sent! Thank you! Your response number is {ind + 1}. For error reporting please have this number ready.")
+        f"Data sent! Thank you! Your response number is {curr_ind}. For error reporting please have this number ready.")
     await resp.delete()
 
 
@@ -474,8 +480,6 @@ async def dateupdate(ctx, index, *args):
     log.add_field(name="Answer", value=answer, inline=False)
     log.set_thumbnail(url=botIcon)
     await error.send(embed=log)
-
-
 
 
 @bot.command(aliases=["fd"])
@@ -528,9 +532,11 @@ async def finddupes(ctx):
                         pass
         await loadmsg.delete()
         if final != []:
-            await msg.reply(f"Deleted rows: {', '.join([str(i) for i in marked]) if final != [] else 'None'}")
+            out = await msg.reply(f"Deleted rows: {', '.join([str(i) for i in marked]) if final != [] else 'None'}")
         else:
-            await msg.reply(f"Consecutive dupes found: None")
+            out = await msg.reply(f"Consecutive dupes found: None")
+        updateChars()
+        await out.edit("Sheet refreshed!")
     else:
         await msg.reply("You do not have access to this command")
 
