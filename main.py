@@ -338,7 +338,7 @@ async def visit(ctx):
                                    description="Most likely answer to be correct",
                                    colour=0x00ff00)
             answer.add_field(name="Correct answers",
-                             value=f"**Most likely answer** (`mode`)\n - {mode(goodresults) if mode(goodresults) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(goodresults)}",
+                             value=f"**Most likely answer** (`mode`)\n - {mode(goodresults) if mode(goodresults) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(list(set(goodresults)))}",
                              inline=False)
         else:
             answer = discord.Embed(title="Collected Data on this Question:",
@@ -349,7 +349,7 @@ async def visit(ctx):
                              inline=False)
             if neutralresults:
                 answer.add_field(name="Neutral answers",
-                                 value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults) if mode(neutralresults) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(neutralresults)}",
+                                 value=f"**Most likely answer** (`mode`)\n - {mode(neutralresults) if mode(neutralresults) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(list(set(neutralresults)))}",
                                  inline=False)
             else:
                 answer = discord.Embed(title="Collected Data on this Question:",
@@ -359,7 +359,7 @@ async def visit(ctx):
                                  value="So far there are no neutral answers collected",
                                  inline=False)
                 answer.add_field(name="Wrong answers",
-                                 value=f"**List of all wrong answers**\n - {', '.join(badresults)}",
+                                 value=f"**List of all wrong answers**\n - {', '.join(list(set(badresults)))}",
                                  inline=False)
         answer.set_thumbnail(url=question.url)
         answer.set_footer(
@@ -367,8 +367,57 @@ async def visit(ctx):
         await msg.reply(embed=answer)
         await kvi.add_reaction("✅")
     else:
-        norecords = await ctx.send("No records found - do your best to answer the question, and check ✅ when finished")
+        emb = discord.Embed(title="No records found", description="Do your best to answer the question, and check ✅ when finished")
+        emb.add_field(name="Answers from other characters", value="Click the reaction below to get more data on this question, but for all characters instead", inline=False)
+        emb.set_footer(text="Note that this data may not be accurate")
+        norecords = await ctx.send(embed=emb)
+        await norecords.add_reaction("📈")
         await kvi.add_reaction("✅")
+        while True:
+            try:
+                def check(reaction, user):
+                    return user == ctx.author and str(reaction.emoji) == "📈"
+                await bot.wait_for("reaction_add", check=check, timeout=15)
+                gquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == 1]
+                nquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == 0]
+                bquery = [i["Answer"] for i in datinganswers if i["Question"] == question.question and i["Result"] == -1]
+                if gquery:
+                    qanswer = discord.Embed(title="Collected Data on this Question:",
+                                       description="Most likely answer to be correct",
+                                       colour=0x00ff00)
+                    qanswer.add_field(name="Correct answers",
+                                 value=f"**Most likely answer** (`mode`)\n - {mode(gquery) if mode(gquery) != '' else 'None'}\n*List of all correct answers*\n - {', '.join(list(set(gquery)))}",
+                                 inline=False)
+                else:
+                    qanswer = discord.Embed(title="Collected Data on this Question:",
+                                       description="Most likely answer to be correct",
+                                       colour=0xf8e71c)
+                    qanswer.add_field(name="Correct answers",
+                                 value="So far there are no correct answers collected",
+                                 inline=False)
+                    if nquery:
+                        qanswer.add_field(name="Neutral answers",
+                                     value=f"**Most likely answer** (`mode`)\n - {mode(nquery) if mode(nquery) != '' else 'None'}\n*List of all neutral answers*\n - {', '.join(list(set(nquery)))}",
+                                     inline=False)
+                    else:
+                        qanswer = discord.Embed(title="Collected Data on this Question:",
+                                           description="Most likely answer to be correct",
+                                           colour=0xff0000)
+                        qanswer.add_field(name="Neutral answers",
+                                     value="So far there are no neutral answers collected",
+                                     inline=False)
+                        qanswer.add_field(name="Wrong answers",
+                                     value=f"**List of all wrong answers**\n - {', '.join(list(set(bquery)))}",
+                                     inline=False)
+                qanswer.set_thumbnail(url=question.url)
+                qanswer.set_footer(
+                text="Note that all answers contain a random element - answering correctly may not earn you AP")
+                await norecords.edit(embed=qanswer)
+                break
+            except asyncio.TimeoutError:
+                break
+            except:
+                pass
     while True:
         try:
             def check(reaction, user):
