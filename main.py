@@ -130,6 +130,7 @@ async def on_ready():
                       description="Active and inactive commands")
     e.add_field(name="Active commands",
                 value="- Dating Questions", inline=False)
+    e.add_field(name="Characters Loaded", value=len(characters), inline=False)
     e.add_field(name="Inactive commands", value="-Event pings",
                 inline=False)
     e.add_field(name="Other info",
@@ -325,8 +326,8 @@ async def visit(ctx):
                 break
         except asyncio.TimeoutError:
             return
-    if [i for i in characters if i.url[:-6] == url[:-6]][0]:
-        c = [i for i in characters if i.url[:-6] == url[:-6]][0]
+    if [i for i in characters if stripURL(i.url) == stripURL(url)][0]:
+        c = [i for i in characters if stripURL(i.url) == stripURL(url)][0]
         results = [i for i in c.questions if question.question == i["Question"]]
     else:
         results = []
@@ -614,6 +615,5 @@ async def on_message(message):
             await bot.process_commands(message)
     else:
         await bot.process_commands(message)
-
 
 bot.run(token)
