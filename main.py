@@ -37,7 +37,7 @@ async def on_ready():
     global characters
     global curr_ind
 
-    updates = bot.get_channel(816514583161602069)
+    updates = bot.get_channel(0)  # <- update channel id
 
     # GOOGLE SHEETS
     try:
@@ -180,7 +180,7 @@ def isRightUser(reaction):
 def isCallerAndCorrect(msg, content):
     def inner(message):
         return message.author == msg.author and message.content.lower()[
-                                                :3] == content and message.channel == msg.channel
+                                                :3] == content and message.channel == msg.channel  # :3 for kvi (3 letters long)
 
     return inner
 
