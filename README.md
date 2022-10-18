@@ -16,6 +16,7 @@ A quick explaination on the sheet:
 - The urls for the characters are truncated, because all editions of a character share the same dating preferences, but do not share the same url
 - Ids are made public, but probably do not pose a threat
 - The dyes are also all publicly found on public and large Karuta servers.
+- The data for the Servers sheet has been wiped, as that is private information, but the headers are still there.
 
 If any possibility of compromised data occurs, let me know so I can remove those columns from the sheet.
 
