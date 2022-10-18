@@ -2,7 +2,7 @@
 An archive for the 2nd instance of the karuta assist bot
 
 
-Due to recent slash command changes made by Discord and Karuta, I have decided to permanently disable my bot.
+Due to recent slash command changes made by Discord and Karuta, and Heroku no longer being free, I have decided to permanently disable my bot.
 I am sure this comes as great sadness for all 0 of you users out there, but it is what it is.
 
 However, all the code is still here, so if anyone wishes to run this bot again, feel free to edit the code attached and start up a new bot.
@@ -19,6 +19,8 @@ A quick explaination on the sheet:
 - The data for the Servers sheet has been wiped, as that is private information, but the headers are still there.
 
 If any possibility of compromised data occurs, let me know so I can remove those columns from the sheet.
+
+A note for those that want to pick up the project, I am using **very** old versions of gspread and discord. It *will* not work unless you refactor into the newest versions of those modules.
 
 It's been a great time over the past 2(?) years, love you all.
 
