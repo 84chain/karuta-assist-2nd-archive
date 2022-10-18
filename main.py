@@ -9,33 +9,15 @@ import os
 import sys
 from collections import Counter
 
-token = "Nzc5NTAwNjAyNDg0MTk1MzI4.X7hcgg.y4STLPtvCoHYr7lHI3EmE029nbI"
+token = ""
 bot = commands.Bot(command_prefix=["k", "K"])
+key = ""
 
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a641bf.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name(key, scope)
 client = gspread.authorize(creds)
 
-botIcon = "https://cdn.discordapp.com/attachments/783771457468628996/902034363863146566/unknown.png"
-hfp = open("hina.png", "rb")
-sfp = open("sayo.png", "rb")
-hina = hfp.read()
-sayo = sfp.read()
-
-boardpossiblestr = "0wjtwbdr2"
-directiondict = {"u": "up",
-                 "d": "down",
-                 "r": "right",
-                 "l": "left"}
-squaredict = {"0": "0️⃣",  # nothing
-              "b": "🪙",  # bonus
-              "d": "⬇",  # drop
-              "r": "🔪",  # robber
-              "2": "📈",  # doubler
-              "w": "🔁",  # warp
-              "t": "💀",  # trap
-              "j": "💰"  # jeff
-              }
+botIcon = ""
 
 restrictedguilds = []
 serversheet = []
@@ -59,8 +41,9 @@ async def on_ready():
 
     # GOOGLE SHEETS
     try:
+        # Retry for the sake of it
         scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-        creds = ServiceAccountCredentials.from_json_keyfile_name('karuta-assist-3fa5c4a641bf.json', scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name(key, scope)
         client = gspread.authorize(creds)
 
         sheet = client.open('Karuta Assist')
@@ -70,6 +53,8 @@ async def on_ready():
 
     except:
         await updates.send("Error connecting to Google Sheets, retrying...")
+
+    # Servers and restricted channels
     serversheet = servers.get_all_records()
     datinganswers = datingsheet.get_all_records()
     restrictedguilds = [int(i["Guild"]) for i in serversheet]
@@ -82,15 +67,19 @@ async def on_ready():
         except:
             await updates.send("Error initializing data")
 
+    # Cache answers for faster access
     updateChars()
     curr_ind = len(datinganswers)
 
+    # Get records to filter sheet
     while True:
         try:
             load = datingsheet.get_all_records()
             break
         except:
             pass
+
+    # Filter the sheet (fast algorithm for find consecutive dupes in O(n) time)
     listload = [tuple(i.values()) for i in load]
     setload = list(set(listload))
     alldupes = list((Counter(listload) - Counter(setload)).elements())
@@ -126,6 +115,7 @@ async def on_ready():
                 except:
                     pass
 
+    # Loading and bootup successful
     e = discord.Embed(title=f"2nd instance status as of {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                       description="Active and inactive commands")
     e.add_field(name="Active commands",
@@ -143,6 +133,7 @@ async def on_ready():
     print("Bot is Ready")
 
 
+# Ignore command not found errors
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, CommandNotFound):
@@ -150,34 +141,23 @@ async def on_command_error(ctx, error):
     raise error
 
 
-@bot.event
-async def on_command(ctx):
-    try:
-        if 6 < datetime.datetime.now().hour < 19:
-            await bot.user.edit(avatar=hina)
-        else:
-            await bot.user.edit(avatar=sayo)
-    except:
-        pass
-
-
 # KILLSWITCH
 @bot.command(aliases=["d2"])
 async def die2(ctx):
     msg = ctx.message
-    if ctx.author.id == 166271462175408130:
-        await msg.reply("Dying... :skull:")
+    if ctx.author.id == 0:  # <- admin id
+        await msg.reply("Dying... :skull:")  # <- whatever you want to be
         sys.exit()
     else:
         await msg.reply("You do not have access to this command")
 
 
-# ROLL CALL
+# ROLL CALL (to see if instance is present)
 @bot.command(aliases=["rc"])
 async def rollcall(ctx):
     msg = ctx.message
-    if ctx.author.id == 166271462175408130:
-        await msg.reply("Instance 2 o7")
+    if ctx.author.id == 0:  # <- admin id
+        await msg.reply("Instance 2 o7")  # <- whatever you want to be
     else:
         await msg.reply("You do not have access to this command")
 
@@ -185,7 +165,7 @@ async def rollcall(ctx):
 # BOT WAIT FOR CHECKS
 def containsEmbed(ch):
     def inner(message):
-        return message.embeds != [] and message.channel == ch and message.author.id == 646937666251915264
+        return message.embeds != [] and message.channel == ch and message.author.id == 646937666251915264  # <- Karuta bot id
 
     return inner
 
@@ -206,7 +186,7 @@ def isCallerAndCorrect(msg, content):
 
 
 # HELPERS
-# Fuck Python rounding
+# Fuck Python rounding, don't want to import builtins so this is what we get
 def Round(fl):
     s = str(fl)
     if s.split(".")[-1] == "5":
@@ -215,7 +195,7 @@ def Round(fl):
         return round(fl)
 
 
-# Fuck list.index()
+# Fuck list.index(), get all indexes of an element
 def allindex(l, item):
     indexes = []
     for i, j in enumerate(l):
@@ -223,11 +203,12 @@ def allindex(l, item):
             indexes.append(i)
     return indexes
 
-
+# For restricted channels of servers
 def allowedChannels(guild):
     return [int(i["Channel"]) for i in serversheet if int(i["Guild"]) == guild]
 
 
+# Mean median and mode https://www.youtube.com/watch?v=oNdVynH6hcY :fire:
 def mode(arr):
     counts = {k: arr.count(k) for k in set(arr)}
     modes = sorted(dict(filter(lambda x: x[1] == max(counts.values()), counts.items())).keys())
@@ -238,7 +219,7 @@ def mode(arr):
     else:
         return "\n".join([str(i) for i in modes])
 
-
+# Strip a character picture url of it's edition and version
 def stripURL(url):
     s = str(url).split("-")
     out = []
@@ -247,13 +228,13 @@ def stripURL(url):
             out.append(i)
     return "-".join(out[:-1]).replace("/versioned", "")
 
-
+# Remove the url field
 def removeURL(question):
     return {"Question": question["Question"],
             "Answer": question["Answer"],
             "Result": question["Result"]}
 
-
+# Cache characters, questions, answers into memory in form of Character
 def updateChars():
     for url in list(set([i["URL"] for i in datinganswers])):
         characters.append(Character(url, [removeURL(k) for k in datinganswers if k["URL"] == url]))
@@ -261,6 +242,7 @@ def updateChars():
 
 # CLASSES
 class Question:
+    # Just trust, don't worry about it
     def __init__(self, kvi_d, url):
         splitd = kvi_d.replace("`", "").split("\n")
         self.character = " ".join(splitd[1].split(" ")[2:-1]).replace("*", "")
@@ -297,20 +279,20 @@ class Character:
 
 # DATING QUESTIONS
 @bot.command(aliases=["vi", "VI"])
-async def visit(ctx):
-    global curr_ind
-    logs = bot.get_channel(825955683996401685)
+async def visit(ctx):  # <- command name shadows karuta for simultaneous activation
+    global curr_ind  # <- run a local curr_ind so no need to query sheet each time
+    logs = bot.get_channel(0)  # <- logs channel id
     msg = ctx.message
-    while True:
+    while True:  # <- need while true to not break on other karuta messages
         try:
             kvi = await bot.wait_for("message", check=containsEmbed(ctx.channel), timeout=10)
             kvi_e = kvi.embeds[0]
             if kvi_e.title == "Visit Character":
-                await kvi.add_reaction("❓")
+                await kvi.add_reaction("❓")  # <- trigger
                 break
         except asyncio.TimeoutError:
             return
-        except IndexError:
+        except IndexError:  # <- index error occurs if the message has no attachments (we are looking for embed)
             pass
     while True:
         try:
@@ -319,18 +301,21 @@ async def visit(ctx):
 
             await bot.wait_for("reaction_add", check=check, timeout=60)
             kvi_e = kvi.embeds[0]
-            if kvi_e.title == "Visit Character" and "1️⃣" in kvi_e.description:
+            if kvi_e.title == "Visit Character" and "1️⃣" in kvi_e.description:  # <- if the kvi is on a question
                 kvi_d = kvi_e.description
                 url = kvi_e.thumbnail.url
                 question = Question(kvi_d, url)
                 break
         except asyncio.TimeoutError:
             return
+    # Query results
     if [i for i in characters if stripURL(i.url) == stripURL(url)][0]:
         c = [i for i in characters if stripURL(i.url) == stripURL(url)][0]
         results = [i for i in c.questions if question.question == i["Question"]]
     else:
         results = []
+
+    # if result is found, display it
     if results:
         goodresults = [i["Answer"] for i in results if i["Result"] == 1]
         neutralresults = [i["Answer"] for i in results if i["Result"] == 0]
@@ -368,7 +353,7 @@ async def visit(ctx):
             text="Note that all answers contain a random element - answering correctly may not earn you AP")
         await msg.reply(embed=answer)
         await kvi.add_reaction("✅")
-    else:
+    else:  # no results found
         emb = discord.Embed(title="No records found",
                             description="Do your best to answer the question, and check ✅ when finished")
         emb.add_field(name="Answers from other characters",
@@ -378,6 +363,8 @@ async def visit(ctx):
         norecords = await ctx.send(embed=emb)
         await norecords.add_reaction("📈")
         await kvi.add_reaction("✅")
+
+    # option to check question results for all characters
     while True:
         try:
             def check(reaction, user):
@@ -431,6 +418,8 @@ async def visit(ctx):
                 break
             except:
                 pass
+
+    # data collection step, send out embed
     if react[0].emoji == "✅" or react2[0].emoji == "✅":
         kvi_e = kvi.embeds[0]
         color = str(kvi_e.color)
@@ -470,6 +459,8 @@ async def visit(ctx):
             await resp.add_reaction("3️⃣")
         if numquestions == 4:
             await resp.add_reaction("4️⃣")
+
+    # read collected embed from reactions
     while True:
         try:
             def check(reaction, user):
@@ -489,6 +480,8 @@ async def visit(ctx):
         except asyncio.TimeoutError:
             await ctx.send("Timed out")
             return
+
+    # send to sheet
     while True:
         try:
             datingsheet.append_row(
@@ -496,6 +489,8 @@ async def visit(ctx):
             break
         except:
             pass
+
+    # update index locally and return output to user
     curr_ind += 1
     log = discord.Embed(title="Dating Answer Submitted",
                         description=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}")
@@ -514,10 +509,10 @@ async def visit(ctx):
         f"Data sent! Thank you! Your response number is {curr_ind}. For error reporting please have this number ready.")
     await resp.delete()
 
-
+# command to update an answer (in case of error/misinput)
 @bot.command(aliases=["du"])
 async def dateupdate(ctx, index, *args):
-    error = bot.get_channel(902049222025682994)
+    error = bot.get_channel(0)  # <- special error channel, more important logs basically
     msg = ctx.message
     answer = " ".join(args)
     while True:
@@ -534,11 +529,11 @@ async def dateupdate(ctx, index, *args):
     log.set_thumbnail(url=botIcon)
     await error.send(embed=log)
 
-
+# finds and filters consecutive dupes in O(n) time, probably the only good piece of code here
 @bot.command(aliases=["fd"])
 async def finddupes(ctx):
     msg = ctx.message
-    if ctx.author.id == 166271462175408130:
+    if ctx.author.id == 0:  # <- admin id
         loadmsg = await ctx.send("Loading the Sheet... please wait")
         loads = 0
         while True:
@@ -597,7 +592,7 @@ async def finddupes(ctx):
 @bot.command(aliases=["r2", "2r"])
 async def restart2(ctx):
     msg = ctx.message
-    if ctx.author.id == 166271462175408130:
+    if ctx.author.id == 0:  # <- admin id
         await msg.reply("Restarting...")
         os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
     else:
